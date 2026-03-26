@@ -58,7 +58,11 @@ You need version 3.9 or higher.
 npm install -g @anthropic-ai/claude-code
 ```
 
-This installs Claude Code globally on your computer. It may take a minute.
+This installs Claude Code globally on your computer. It may take a minute. If the above doesn't work, try:
+
+```
+sudo npm install -g @anthropic-ai/claude-code
+```
 
 ### 6. Verify the Installation
 
