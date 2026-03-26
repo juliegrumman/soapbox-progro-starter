@@ -3,6 +3,8 @@ dist/
 venv/
 .env
 .DS_Store
+soapbox.db-shm
+soapbox.db-wal
 .claude/
 CLAUDE-CODE-PROJECT-BRIEF.md
 scripts/normalize_sephora.py
