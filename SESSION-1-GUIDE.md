@@ -2,11 +2,99 @@
 
 Turn thousands of competitor reviews into a competitive intelligence report — in 60 minutes.
 
-## What You'll Need
+## Before You Begin (10 minutes)
 
-- A laptop with Claude Code installed (see SETUP.md if you haven't done this yet)
-- A terminal (Mac: Terminal app, Windows: PowerShell)
-- An internet connection
+Complete these steps before the session so you arrive ready to go.
+
+### 1. Open a Terminal
+
+- **Mac:** Press `Cmd + Space`, type "Terminal", and hit Enter
+- **Windows:** Press the Windows key, type "PowerShell", and hit Enter
+
+You'll see a window with a blinking cursor. This is your terminal.
+
+### 2. Check if Git is Installed
+
+Paste this into your terminal and press Enter:
+
+```
+git --version
+```
+
+If you see a version number (e.g., `git version 2.39.0`), you're good. Move on.
+
+**If you see "command not found":**
+- **Mac:** A dialog will pop up asking to install developer tools. Click "Install" and wait.
+- **Windows:** Download Git from https://git-scm.com/downloads and run the installer. Use the default settings.
+
+### 3. Check if Node.js is Installed
+
+```
+node --version
+```
+
+You need version 18 or higher. If you see `v18.x.x` or `v20.x.x` or higher, you're good.
+
+**If you see "command not found" or a version below 18:**
+- Download from https://nodejs.org/ — choose the LTS (Long Term Support) version
+- Run the installer with default settings
+- Close and reopen your terminal, then check `node --version` again
+
+### 4. Check if Python 3 is Installed
+
+```
+python3 --version
+```
+
+You need version 3.9 or higher.
+
+**If you see "command not found":**
+- **Mac:** Python 3 comes pre-installed on recent macOS. If missing, install via https://www.python.org/downloads/
+- **Windows:** Download from https://www.python.org/downloads/ — check "Add Python to PATH" during installation
+
+### 5. Install Claude Code
+
+```
+npm install -g @anthropic-ai/claude-code
+```
+
+This installs Claude Code globally on your computer. It may take a minute.
+
+### 6. Verify the Installation
+
+```
+claude --version
+```
+
+You should see a version number. If so, you're all set.
+
+### 7. Authenticate Claude Code
+
+```
+claude
+```
+
+The first time you run Claude Code, it will ask you to log in. Follow the prompts to authenticate with your Anthropic account.
+
+Once you see Claude's prompt, type `/exit` to close it. You're ready for the session.
+
+### Setup Checklist
+
+- [ ] Terminal opens without issues
+- [ ] `git --version` returns a version number
+- [ ] `node --version` returns v18 or higher
+- [ ] `python3 --version` returns 3.9 or higher
+- [ ] `claude --version` returns a version number
+- [ ] `claude` opens and you can authenticate
+
+### Need Help?
+
+If you run into issues, email [support contact] with:
+1. What step you're stuck on
+2. The exact error message you see
+3. Whether you're on Mac or Windows
+
+---
 
 ## Step 1: Clone the Project
 
@@ -49,20 +137,20 @@ This opens a browser-based database viewer where you can see tables, run queries
 
 ## Step 5: Create Your First Skill
 
-Before we collect reviews, let's learn how Claude Code skills work. This project ships with two skill templates in the `skills/` folder — but they're just markdown files sitting in a directory. To turn them into slash commands, you need to wire them up.
+Before we collect reviews, let's learn how Claude Code skills work. This project ships with two skill templates in the `skill-templates/` folder — but they're just markdown files sitting in a directory. To turn them into slash commands, you need to wire them up.
 
 **What's a skill?** A skill is a markdown file that gives Claude a detailed playbook for a specific task. Instead of writing a long prompt every time, you write the instructions once and save them as a skill. Claude follows the playbook step by step.
 
 **How does a markdown file become a slash command?** By putting it in the right place with the right format:
 1. Create the directory `.claude/skills/<skill-name>/`
-2. Copy the markdown file in as `SKILL.md`
+2. Copy the skill template in as `SKILL.md`
 3. Make sure the file has a YAML header with `name` and `description`
 4. That's it — Claude Code auto-discovers it and registers it as `/<skill-name>`
 
 Let's do it. First, take a look at the template to see what's in it:
 
 ```
-Open the file skills/competitive-review-collection.md
+Open the file skill-templates/competitive-review-collection.md
 ```
 
 Notice the YAML header at the top — that's what tells Claude Code the skill's name and what it does. The rest is the playbook Claude will follow.
@@ -70,7 +158,7 @@ Notice the YAML header at the top — that's what tells Claude Code the skill's 
 Now tell Claude to wire it up:
 
 ```
-Create a Claude Code skill from the template at skills/competitive-review-collection.md. Copy it to .claude/skills/competitive-review-collection/SKILL.md
+Create a Claude Code skill from the template at skill-templates/competitive-review-collection.md. Copy it to .claude/skills/competitive-review-collection/SKILL.md
 ```
 
 To verify it worked, type `/` and you should see `competitive-review-collection` appear in the autocomplete list.
@@ -111,12 +199,12 @@ This grounds you in the raw data before the big analysis.
 
 ## Step 8: Wire Up the Analysis Skill
 
-You've done this once already, so this should feel familiar. The second skill template is at `skills/competitive-intelligence-analysis.md`.
+You've done this once already, so this should feel familiar. The second skill template is at `skill-templates/competitive-intelligence-analysis.md`.
 
 Wire it up the same way:
 
 ```
-Create a Claude Code skill from the template at skills/competitive-intelligence-analysis.md. Copy it to .claude/skills/competitive-intelligence-analysis/SKILL.md
+Create a Claude Code skill from the template at skill-templates/competitive-intelligence-analysis.md. Copy it to .claude/skills/competitive-intelligence-analysis/SKILL.md
 ```
 
 Verify it by typing `/` — you should now see both skills in the autocomplete.
@@ -171,7 +259,7 @@ What are the top 3 objection patterns from the report?
 ## Troubleshooting
 
 **"command not found: claude"**
-Claude Code isn't installed yet. See SETUP.md for installation instructions.
+Claude Code isn't installed yet. See the "Before You Begin" section at the top of this guide.
 
 **"no such table: competitive_reviews"**
 The database file may not have downloaded correctly. Try re-cloning the repo.
