@@ -163,9 +163,21 @@ Create a Claude Code skill from the template at skill-templates/competitive-revi
 
 To verify it worked, type `/` and you should see `competitive-review-collection` appear in the autocomplete list.
 
-## Step 6: Collect Competitor Reviews
+## Step 6: Load Reviews into the Database
 
-The database starts empty — let's populate it. Now that you've wired up the skill, use it:
+The repo ships with pre-scraped competitor review CSVs in `data/reviews/`. To load them into the SQLite database, tell Claude:
+
+```
+Run npm run seed
+```
+
+This imports all `*_reviews_normalized.csv` files from `data/reviews/` into the database. You should see counts for each competitor when it finishes.
+
+**Why this matters:** Any time new CSV files are added to `data/reviews/` — whether from a scraper or uploaded manually — you need to run `npm run seed` to get them into the database where Claude can analyze them.
+
+### Optional: Collect Fresh Reviews with the Skill
+
+If you want to see the scraper in action, use the skill you just wired up:
 
 ```
 /competitive-review-collection
