@@ -36,7 +36,7 @@ function seedReviews() {
   }
 
   const csvFiles = readdirSync(DATA_DIR)
-    .filter((f) => f.endsWith("_reviews_normalized.csv") && f !== "all_reviews_normalized.csv")
+    .filter((f) => f.endsWith("_reviews_normalized.csv"))
     .sort()
     .map((f) => resolve(DATA_DIR, f));
 
