@@ -1,0 +1,29 @@
+{
+  "name": "soapbox-progro",
+  "version": "1.0.0",
+  "description": "ProGRO Density+ Product Command Center",
+  "type": "module",
+  "scripts": {
+    "seed": "tsx src/db/seed.ts",
+    "db:push": "drizzle-kit push",
+    "dev": "tsx src/server/index.ts"
+  },
+  "keywords": [],
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "better-sqlite3": "^12.8.0",
+    "csv-parse": "^6.2.1",
+    "dotenv": "^17.3.1",
+    "drizzle-orm": "^0.45.1",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}
