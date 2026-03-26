@@ -6,3 +6,5 @@ venv/
 .claude/
 CLAUDE-CODE-PROJECT-BRIEF.md
 scripts/normalize_sephora.py
+scripts/classify_reviews.py
+scripts/export_ratings_to_csv.py

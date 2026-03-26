@@ -133,7 +133,7 @@ cd soapbox-progro-starter
 npx drizzle-kit studio
 ```
 
-This opens a browser-based database viewer where you can see tables, run queries, and watch data populate in real time as Claude works. Keep this open alongside Claude Code during the session.
+This opens a browser-based database viewer where you can see tables, run queries, and watch data populate in real time as Claude works. Keep this open alongside Claude Code during the session. https://local.drizzle.studio/
 
 ## Step 5: Create Your First Skill
 
