@@ -5,3 +5,4 @@ venv/
 .DS_Store
 .claude/
 CLAUDE-CODE-PROJECT-BRIEF.md
+scripts/normalize_sephora.py
