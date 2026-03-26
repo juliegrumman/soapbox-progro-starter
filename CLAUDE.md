@@ -88,5 +88,5 @@ Agents share context through the SQLite database, not direct communication:
 ## Important Notes
 - The `data/` and `reports/` directories are gitignored in the dev repo (data is regenerated from scrapers)
 - In the participant repo, `soapbox.db` ships pre-seeded — no need to run seed commands
-- Python scrapers use a venv at `venv/` — activate with `source venv/bin/activate`
+- Python scrapers require a venv at `venv/`. If it doesn't exist, create it with `python3 -m venv venv && source venv/bin/activate && pip install -r scripts/requirements.txt`. To run scrapers directly: `venv/bin/python scripts/scrape_okendo.py all`
 - All scrapers output the normalized CSV schema defined in `scrape_okendo.py`

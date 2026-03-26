@@ -10,6 +10,13 @@ Scrape and normalize product reviews from competitor brands for competitive inte
 
 ## How It Works
 
+### Python Environment Setup
+Before running any scraper, ensure the Python virtual environment is ready:
+1. Check if `venv/` exists in the project root. If not, create it: `python3 -m venv venv`
+2. Activate it: `source venv/bin/activate` (Mac/Linux) or `venv\Scripts\activate` (Windows)
+3. Install dependencies: `pip install -r scripts/requirements.txt`
+4. All `python` commands in this skill should be run with the venv activated, or use the venv Python directly: `venv/bin/python scripts/scrape_okendo.py all`
+
 ### Existing Scrapers
 Check the `scripts/` directory for existing platform scrapers before writing new ones:
 - `scrape_okendo.py` — Scrapes any Okendo-powered review widget. Configured competitors can be run with `python scripts/scrape_okendo.py <competitor_key>` or `python scripts/scrape_okendo.py all`.
@@ -58,3 +65,9 @@ If the competitor uses a different review platform (Yotpo, Bazaarvoice, Judge.me
 - One normalized CSV file per competitor: `<competitor>_reviews_normalized.csv`
 - Combined file when scraping multiple: `all_reviews_normalized.csv`
 - All files saved to the project's `data/reviews/` directory
+
+## Load into Database
+After scraping, import the normalized CSVs into SQLite:
+1. Ensure all CSV files are in `data/reviews/`
+2. Run `npm run seed` to import into the `competitive_reviews` table
+3. Verify with: `SELECT competitor, COUNT(*), ROUND(AVG(rating), 2) FROM competitive_reviews GROUP BY competitor;`

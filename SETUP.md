@@ -36,7 +36,19 @@ You need version 18 or higher. If you see `v18.x.x` or `v20.x.x` or higher, you'
 - Run the installer with default settings
 - Close and reopen your terminal, then check `node --version` again
 
-## 4. Install Claude Code
+## 4. Check if Python 3 is Installed
+
+```
+python3 --version
+```
+
+You need version 3.9 or higher.
+
+**If you see "command not found":**
+- **Mac:** Python 3 comes pre-installed on recent macOS. If missing, install via https://www.python.org/downloads/
+- **Windows:** Download from https://www.python.org/downloads/ — check "Add Python to PATH" during installation
+
+## 5. Install Claude Code
 
 ```
 npm install -g @anthropic-ai/claude-code
@@ -44,7 +56,7 @@ npm install -g @anthropic-ai/claude-code
 
 This installs Claude Code globally on your computer. It may take a minute.
 
-## 5. Verify the Installation
+## 6. Verify the Installation
 
 ```
 claude --version
@@ -52,7 +64,7 @@ claude --version
 
 You should see a version number. If so, you're all set.
 
-## 6. Authenticate Claude Code
+## 7. Authenticate Claude Code
 
 ```
 claude
@@ -67,6 +79,7 @@ Once you see Claude's prompt, type `/exit` to close it. You're ready for the ses
 - [ ] Terminal opens without issues
 - [ ] `git --version` returns a version number
 - [ ] `node --version` returns v18 or higher
+- [ ] `python3 --version` returns 3.9 or higher
 - [ ] `claude --version` returns a version number
 - [ ] `claude` opens and you can authenticate
 
