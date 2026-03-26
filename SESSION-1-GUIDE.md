@@ -47,21 +47,47 @@ npx drizzle-kit studio
 
 This opens a browser-based database viewer where you can see tables, run queries, and watch data populate in real time as Claude works. Keep this open alongside Claude Code during the session.
 
-## Step 5: Collect Competitor Reviews
+## Step 5: Create Your First Skill
 
-The database starts empty — let's populate it. Type this into Claude Code:
+Before we collect reviews, let's learn how Claude Code skills work. This project ships with two skill templates in the `skills/` folder — but they're just markdown files sitting in a directory. To turn them into slash commands, you need to wire them up.
+
+**What's a skill?** A skill is a markdown file that gives Claude a detailed playbook for a specific task. Instead of writing a long prompt every time, you write the instructions once and save them as a skill. Claude follows the playbook step by step.
+
+**How does a markdown file become a slash command?** By putting it in the right place with the right format:
+1. Create the directory `.claude/skills/<skill-name>/`
+2. Copy the markdown file in as `SKILL.md`
+3. Make sure the file has a YAML header with `name` and `description`
+4. That's it — Claude Code auto-discovers it and registers it as `/<skill-name>`
+
+Let's do it. First, take a look at the template to see what's in it:
 
 ```
-Run the competitive review collection skill. Scrape reviews for all competitors and seed the database.
+Open the file skills/competitive-review-collection.md
+```
+
+Notice the YAML header at the top — that's what tells Claude Code the skill's name and what it does. The rest is the playbook Claude will follow.
+
+Now tell Claude to wire it up:
+
+```
+Create a Claude Code skill from the template at skills/competitive-review-collection.md. Copy it to .claude/skills/competitive-review-collection/SKILL.md
+```
+
+To verify it worked, type `/` and you should see `competitive-review-collection` appear in the autocomplete list.
+
+## Step 6: Collect Competitor Reviews
+
+The database starts empty — let's populate it. Now that you've wired up the skill, use it:
+
+```
+/competitive-review-collection
 ```
 
 Claude will run the Python scraper to pull reviews from competitor product pages, normalize them into CSVs, and import them into the SQLite database. If you have Drizzle Studio open, you'll see the `competitive_reviews` table fill up in real time.
 
 **This takes a few minutes.** You'll see Claude working through each competitor one at a time.
 
-**What just happened:** Claude read a skill file that describes *how* to collect reviews, then autonomously executed the scraper, handled the data pipeline, and loaded everything into the database — all from a single prompt.
-
-## Step 6: Warm-Up — See What Claude Knows
+## Step 7: Warm-Up — See What Claude Knows
 
 Type this prompt into Claude Code exactly as written:
 
@@ -83,12 +109,24 @@ Show me 5 one-star reviews from our lowest-rated competitor. What are people com
 
 This grounds you in the raw data before the big analysis.
 
-## Step 7: Run the Competitive Intelligence Analysis
+## Step 8: Wire Up the Analysis Skill
 
-This is the main event. Type this prompt:
+You've done this once already, so this should feel familiar. The second skill template is at `skills/competitive-intelligence-analysis.md`.
+
+Wire it up the same way:
 
 ```
-Run the competitive intelligence analysis. Analyze all reviews in the database and save the report to reports/competitive-intelligence-report.md
+Create a Claude Code skill from the template at skills/competitive-intelligence-analysis.md. Copy it to .claude/skills/competitive-intelligence-analysis/SKILL.md
+```
+
+Verify it by typing `/` — you should now see both skills in the autocomplete.
+
+## Step 9: Run the Competitive Intelligence Analysis
+
+This is the main event. Use the skill you just created:
+
+```
+/competitive-intelligence-analysis
 ```
 
 Claude will now:
@@ -100,7 +138,7 @@ Claude will now:
 
 **This takes several minutes.** Craig will narrate what's happening on screen while you wait.
 
-## Step 8: Find Your Report
+## Step 10: Find Your Report
 
 Your report is saved at:
 

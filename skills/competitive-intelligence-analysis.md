@@ -1,3 +1,8 @@
+---
+name: competitive-intelligence-analysis
+description: Analyzes review data to produce a competitive intelligence report in reports/
+---
+
 # Skill: Competitive Intelligence Analysis
 
 ## Purpose
@@ -33,8 +38,8 @@ FROM competitive_reviews GROUP BY competitor ORDER BY reviews DESC;
 ### Phase 2: Qualitative deep dive (use stratified sampling)
 For the language extraction, objection mapping, and feature gap analysis,
 read a representative sample rather than the full dataset:
-- Sample up to 100 reviews per star rating per competitor
-- For competitors with fewer than 500 reviews, read all of them
+- Sample up to 500 reviews per star rating per competitor
+- For competitors with fewer than 2,000 reviews, read all of them
 - Prioritize reviews with substantive body text (>50 characters)
 - This keeps total review text manageable regardless of how many
   competitors or reviews are in the database

@@ -1,3 +1,8 @@
+---
+name: competitive-review-collection
+description: Orchestrates scraping and normalizing competitor reviews into the competitive_reviews table
+---
+
 # Skill: Competitive Review Collection
 
 ## Purpose

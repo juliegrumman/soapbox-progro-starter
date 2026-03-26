@@ -1,9 +1,8 @@
 # ProGRO Density+ Product Command Center
 
 ## Quick Start
-To run the competitive intelligence analysis, use the skill at
-`skills/skill-competitive-intelligence-analysis.md`. It analyzes all
-competitor reviews in the database and produces a report in `reports/`.
+To run the competitive intelligence analysis, use `/competitive-intelligence-analysis`.
+It analyzes all competitor reviews in the database and produces a report in `reports/`.
 
 ## What This Project Is
 A 5-session Claude Code training series using Soapbox's ProGRO Density+ hair product launch as a live case study. Each session teaches one Claude Code capability while solving one real marketing problem. All sessions share a SQLite database so agents cross-reference each other's outputs.
@@ -20,11 +19,11 @@ soapbox-progro/
 │   │   └── reviews.ts       # Query + save competitive reviews
 │   └── server/
 │       └── index.ts         # Express API for dashboard
+├── skills/                    # Skill templates (wire up to .claude/skills/ to activate)
+│   ├── competitive-review-collection.md
+│   └── competitive-intelligence-analysis.md
 ├── scripts/                  # Python scrapers
 │   └── scrape_okendo.py     # Okendo review scraper (Divi, Vegamour)
-├── skills/                   # Claude Code skill definitions
-│   ├── skill-competitive-review-collection.md
-│   └── skill-competitive-intelligence-analysis.md
 ├── data/reviews/             # Normalized CSV files
 ├── reports/                  # Generated analysis reports
 └── soapbox.db                # SQLite database
@@ -57,8 +56,9 @@ SELECT competitor, title, body FROM competitive_reviews WHERE body LIKE '%thinni
 ```
 
 ## Available Skills
-- **competitive-review-collection** (`skills/skill-competitive-review-collection.md`) — Orchestrates scraping and normalizing competitor reviews
-- **competitive-intelligence-analysis** (`skills/skill-competitive-intelligence-analysis.md`) — Analyzes review data to produce competitive intelligence report
+Skill templates live in `skills/`. To activate them as slash commands, copy each template to `.claude/skills/<skill-name>/SKILL.md`:
+- **competitive-review-collection** (`skills/competitive-review-collection.md`) — Once installed, invoke with `/competitive-review-collection`
+- **competitive-intelligence-analysis** (`skills/competitive-intelligence-analysis.md`) — Once installed, invoke with `/competitive-intelligence-analysis`
 
 ## Available Tools (TypeScript)
 - `src/tools/reviews.ts` — Functions: `getReviews()`, `getReviewCountsByCompetitor()`, `getRatingDistribution()`, `getReviewsByRating()`, `searchReviews()`, `updateReviewEnrichment()`, `insertReview()`
