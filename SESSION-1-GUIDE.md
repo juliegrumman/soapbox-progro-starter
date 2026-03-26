@@ -13,15 +13,15 @@ Turn thousands of competitor reviews into a competitive intelligence report — 
 Open your terminal and paste this command:
 
 ```
-git clone <repo-url> soapbox-progro
+git clone https://github.com/juliegrumman/soapbox-progro-starter.git
 ```
 
-This downloads the project to a folder called `soapbox-progro` on your computer.
+This downloads the project to a folder called `soapbox-progro-starter` on your computer.
 
 ## Step 2: Open Claude Code
 
 ```
-cd soapbox-progro && claude
+cd soapbox-progro-starter && claude
 ```
 
 This moves into the project folder and starts Claude Code. You should see Claude's prompt appear.
@@ -31,12 +31,37 @@ This moves into the project folder and starts Claude Code. You should see Claude
 Type this into Claude Code:
 
 ```
-Run npm install
+npm install
 ```
 
 Wait for it to finish. This installs the tools Claude needs to query the database.
 
-## Step 4: Warm-Up — See What Claude Knows
+## Step 4: Open Drizzle Studio (Optional)
+
+To visually explore the database, open a **second terminal window**, navigate to the project folder, and run:
+
+```
+cd soapbox-progro-starter
+npx drizzle-kit studio
+```
+
+This opens a browser-based database viewer where you can see tables, run queries, and watch data populate in real time as Claude works. Keep this open alongside Claude Code during the session.
+
+## Step 5: Collect Competitor Reviews
+
+The database starts empty — let's populate it. Type this into Claude Code:
+
+```
+Run the competitive review collection skill. Scrape reviews for all competitors and seed the database.
+```
+
+Claude will run the Python scraper to pull reviews from competitor product pages, normalize them into CSVs, and import them into the SQLite database. If you have Drizzle Studio open, you'll see the `competitive_reviews` table fill up in real time.
+
+**This takes a few minutes.** You'll see Claude working through each competitor one at a time.
+
+**What just happened:** Claude read a skill file that describes *how* to collect reviews, then autonomously executed the scraper, handled the data pipeline, and loaded everything into the database — all from a single prompt.
+
+## Step 6: Warm-Up — See What Claude Knows
 
 Type this prompt into Claude Code exactly as written:
 
@@ -58,7 +83,7 @@ Show me 5 one-star reviews from our lowest-rated competitor. What are people com
 
 This grounds you in the raw data before the big analysis.
 
-## Step 5: Run the Competitive Intelligence Analysis
+## Step 7: Run the Competitive Intelligence Analysis
 
 This is the main event. Type this prompt:
 
@@ -75,7 +100,7 @@ Claude will now:
 
 **This takes several minutes.** Craig will narrate what's happening on screen while you wait.
 
-## Step 6: Find Your Report
+## Step 8: Find Your Report
 
 Your report is saved at:
 
