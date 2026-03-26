@@ -9,7 +9,7 @@
  *   helpful_count, reviewer_attributes
  */
 
-import { readFileSync, existsSync } from "fs";
+import { readFileSync, existsSync, readdirSync } from "fs";
 import { resolve } from "path";
 import { parse } from "csv-parse/sync";
 import { db, sqlite } from "./index.js";
@@ -26,31 +26,29 @@ function parseBool(value: string | undefined): boolean | null {
 }
 
 function seedReviews() {
-  // Prefer the combined file; fall back to individual files
-  const combinedPath = resolve(DATA_DIR, "all_reviews_normalized.csv");
-  const diviPath = resolve(DATA_DIR, "divi_reviews_normalized.csv");
-  const vegamourPath = resolve(DATA_DIR, "vegamour_reviews_normalized.csv");
-
-  let csvFiles: string[] = [];
-
-  if (existsSync(combinedPath)) {
-    csvFiles = [combinedPath];
-    console.log("Using combined CSV: all_reviews_normalized.csv");
-  } else {
-    // Fall back to individual files
-    for (const p of [diviPath, vegamourPath]) {
-      if (existsSync(p)) csvFiles.push(p);
-    }
-    if (csvFiles.length === 0) {
-      console.error(
-        `No CSV files found in ${DATA_DIR}.\n` +
-          "Run: cd scripts && python scrape_okendo.py all\n" +
-          "Then move the output CSVs to data/reviews/"
-      );
-      process.exit(1);
-    }
-    console.log(`Using individual CSVs: ${csvFiles.map((f) => f.split("/").pop()).join(", ")}`);
+  // Discover all *_reviews_normalized.csv files, skipping the combined file
+  if (!existsSync(DATA_DIR)) {
+    console.error(
+      `Data directory not found: ${DATA_DIR}\n` +
+        "Run a scraper first, e.g.: venv/bin/python scripts/scrape_okendo.py all"
+    );
+    process.exit(1);
   }
+
+  const csvFiles = readdirSync(DATA_DIR)
+    .filter((f) => f.endsWith("_reviews_normalized.csv") && f !== "all_reviews_normalized.csv")
+    .sort()
+    .map((f) => resolve(DATA_DIR, f));
+
+  if (csvFiles.length === 0) {
+    console.error(
+      `No *_reviews_normalized.csv files found in ${DATA_DIR}.\n` +
+        "Run a scraper first, e.g.: venv/bin/python scripts/scrape_okendo.py all"
+    );
+    process.exit(1);
+  }
+
+  console.log(`Found ${csvFiles.length} CSV files: ${csvFiles.map((f) => f.split("/").pop()).join(", ")}`);
 
   // Clear existing reviews before re-seeding
   sqlite.exec("DELETE FROM competitive_reviews");
