@@ -10,6 +10,7 @@ Usage:
 Add new competitors by adding an entry to the COMPETITORS dict below.
 """
 
+import os
 import requests
 import csv
 import json
@@ -201,6 +202,9 @@ def main():
         print(f"Unknown competitor: {target}")
         print(f"Available: {', '.join(COMPETITORS.keys())}, all")
         sys.exit(1)
+
+    # Ensure output directory exists
+    os.makedirs("data/reviews", exist_ok=True)
 
     for key in targets:
         config = COMPETITORS[key]

@@ -9,4 +9,6 @@ soapbox.db-wal
 CLAUDE-CODE-PROJECT-BRIEF.md
 scripts/normalize_sephora.py
 scripts/classify_reviews.py
+scripts/create_session1_deck.py
+Session-1-Deck.pptx
 scripts/export_ratings_to_csv.py

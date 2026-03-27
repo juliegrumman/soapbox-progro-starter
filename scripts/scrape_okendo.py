@@ -11,6 +11,7 @@ Usage:
 Add new competitors by adding an entry to the COMPETITORS dict below.
 """
 
+import os
 import requests
 import csv
 import json
@@ -188,22 +189,24 @@ def main():
         print(f"Available: {', '.join(COMPETITORS.keys())}, all")
         sys.exit(1)
 
+    # Ensure output directory exists
+    os.makedirs("data/reviews", exist_ok=True)
+
     for key in targets:
         config = COMPETITORS[key]
         rows = scrape_competitor(key, config)
-        filename = f"{key}_reviews_normalized.csv"
+        filename = f"data/reviews/{key}_reviews_normalized.csv"
         write_csv(rows, filename)
 
     # If scraping multiple competitors, also write a combined file
     if len(targets) > 1:
         all_rows = []
         for key in targets:
-            config = COMPETITORS[key]
-            filename = f"{key}_reviews_normalized.csv"
+            filename = f"data/reviews/{key}_reviews_normalized.csv"
             with open(filename, "r", encoding="utf-8") as f:
                 reader = csv.DictReader(f)
                 all_rows.extend(list(reader))
-        write_csv(all_rows, "all_reviews_normalized.csv")
+        write_csv(all_rows, "data/reviews/all_reviews_normalized.csv")
 
 
 if __name__ == "__main__":
