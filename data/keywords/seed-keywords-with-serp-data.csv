@@ -1,0 +1,38 @@
+keyword,position,search_volume,url,intent,cluster
+hair growth serum,3,12100,https://www.vegamour.com/products/gro-hair-serum,commercial,hair growth
+best hair growth serum,5,8100,https://www.byrdie.com/best-hair-growth-serums,commercial,hair growth
+hair growth serum for women,7,4400,https://www.vegamour.com/products/gro-hair-serum,commercial,hair growth
+hair growth products,4,6600,https://www.healthline.com/health/hair-growth-products,commercial,hair growth
+hair density serum,12,1900,https://www.sephora.com/product/hair-density-serum,commercial,hair growth
+thinning hair treatment,6,5400,https://www.healthline.com/health/thinning-hair-treatment,commercial,thinning
+best products for thinning hair,8,3600,https://www.allure.com/gallery/best-products-thinning-hair,commercial,thinning
+hair loss serum,4,4400,https://www.vegamour.com/products/gro-hair-serum,commercial,thinning
+thinning hair women over 40,15,2400,https://www.webmd.com/skin-problems-and-treatments/hair-loss/women-hair-loss,informational,thinning
+hair shedding treatment,18,1300,https://www.aad.org/public/diseases/hair-loss/treatment/tips,informational,thinning
+scalp serum,3,5400,https://www.cosmopolitan.com/style-beauty/beauty/g38380072/best-scalp-serums/,commercial,scalp care
+scalp treatment for hair growth,9,2900,https://www.healthline.com/health/scalp-treatment-hair-growth,commercial,scalp care
+healthy scalp products,14,1600,https://www.byrdie.com/best-scalp-products,commercial,scalp care
+divi scalp serum,1,22200,https://diviofficial.com/products/scalp-serum,navigational,branded
+divi scalp serum reviews,2,6600,https://diviofficial.com/products/scalp-serum,commercial,branded
+vegamour gro hair serum,1,8100,https://www.vegamour.com/products/gro-hair-serum,navigational,branded
+vegamour reviews,3,4400,https://www.vegamour.com/pages/reviews,commercial,branded
+divi vs vegamour,4,3600,https://www.byrdie.com/divi-vs-vegamour,commercial,comparison
+best hair serum brands,6,2900,https://www.allure.com/gallery/best-hair-serums,commercial,comparison
+hair growth serum comparison,11,1300,https://www.cosmopolitan.com/style-beauty/beauty/g39702487/hair-growth-serums-compared/,commercial,comparison
+divi hair serum vs nutrafol,8,1600,https://www.womenshealthmag.com/beauty/a44527932/divi-vs-nutrafol/,commercial,comparison
+biotin hair serum,7,2400,https://www.healthline.com/health/biotin-hair-growth,commercial,ingredients
+redensyl hair serum,16,880,https://www.ncbi.nlm.nih.gov/pmc/articles/redensyl-study,informational,ingredients
+peptide hair treatment,19,720,https://www.allure.com/story/peptides-for-hair-growth,informational,ingredients
+natural hair growth ingredients,13,1900,https://www.medicalnewstoday.com/articles/natural-hair-growth,informational,ingredients
+does hair growth serum work,2,3600,https://www.healthline.com/health/does-hair-serum-work,informational,education
+how long for hair serum results,10,1600,https://www.byrdie.com/how-long-hair-growth-serum-results,informational,education
+hair growth serum before and after,5,2900,https://www.vegamour.com/pages/before-and-after,commercial,education
+hair growth serum side effects,9,1300,https://www.webmd.com/skin-problems-and-treatments/hair-loss/hair-serum-side-effects,informational,education
+what causes hair thinning in women,7,2400,https://www.mayoclinic.org/diseases-conditions/hair-loss/symptoms-causes,informational,education
+best hair serum for postpartum hair loss,14,1600,https://www.whattoexpect.com/first-year/postpartum-health/postpartum-hair-loss/,commercial,thinning
+hair regrowth serum that actually works,11,2400,https://www.allure.com/gallery/best-hair-regrowth-treatments,commercial,hair growth
+affordable hair growth serum,17,990,https://www.cosmopolitan.com/style-beauty/beauty/g44152248/affordable-hair-growth-serums/,commercial,hair growth
+buy hair growth serum online,22,590,https://www.amazon.com/s?k=hair+growth+serum,transactional,hair growth
+hair serum subscription,25,320,https://www.vegamour.com/products/gro-hair-serum,transactional,hair growth
+hormonal hair loss treatment,8,2900,https://www.healthline.com/health/hormonal-hair-loss,informational,thinning
+stress hair loss remedies,12,1900,https://www.webmd.com/skin-problems-and-treatments/hair-loss/stress-hair-loss,informational,thinning

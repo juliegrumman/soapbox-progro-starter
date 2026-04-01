@@ -32,9 +32,39 @@ app.get("/api/reviews/summary", async (_req, res) => {
   res.json(result);
 });
 
-// Keywords summary (Session 2+)
+// Keywords - all data (Session 2+)
 app.get("/api/keywords", async (_req, res) => {
   const result = db.select().from(keywordRankings).all();
+  res.json(result);
+});
+
+// Keywords summary by cluster
+app.get("/api/keywords/summary", async (_req, res) => {
+  const result = db
+    .select({
+      cluster: keywordRankings.cluster,
+      count: sql<number>`COUNT(*)`,
+      avgPosition: sql<number>`ROUND(AVG(${keywordRankings.position}), 1)`,
+      totalVolume: sql<number>`SUM(${keywordRankings.searchVolume})`,
+    })
+    .from(keywordRankings)
+    .groupBy(keywordRankings.cluster)
+    .all();
+  res.json(result);
+});
+
+// Keywords by search intent
+app.get("/api/keywords/by-intent", async (_req, res) => {
+  const result = db
+    .select({
+      intent: keywordRankings.intent,
+      count: sql<number>`COUNT(*)`,
+      avgPosition: sql<number>`ROUND(AVG(${keywordRankings.position}), 1)`,
+      totalVolume: sql<number>`SUM(${keywordRankings.searchVolume})`,
+    })
+    .from(keywordRankings)
+    .groupBy(keywordRankings.intent)
+    .all();
   res.json(result);
 });
 
