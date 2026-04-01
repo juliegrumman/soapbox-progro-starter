@@ -24,6 +24,12 @@ Open your terminal:
 cd soapbox-progro && claude
 ```
 
+If you already have the repo but need the latest updates:
+
+```
+cd soapbox-progro && git pull && npm install && claude
+```
+
 If you're starting fresh (missed Session 1), clone the project first:
 
 ```

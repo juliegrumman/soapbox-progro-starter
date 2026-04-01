@@ -27,6 +27,46 @@ Use the tool functions in `src/tools/keywords.ts` to write results to the databa
 
 ---
 
+## Amazon Search Query Performance Data (March 2026)
+
+The following keywords come from the client's Amazon Brand Analytics Search Query Performance report. Use these directionally when building seed keyword lists and interpreting results — they show what real shoppers search on Amazon to find Soapbox products.
+
+| Keyword | Amazon Rank | Amazon Search Volume |
+|---------|-------------|---------------------|
+| soapbox | 1 | 1,359 |
+| hair serum | 2 | 19,686 |
+| soapbox shampoo and conditioner | 3 | 2,204 |
+| scalp serum | 4 | 9,467 |
+| hair growth serum | 5 | 34,011 |
+| nutrafol | 6 | 25,987 |
+| soapbox hair growth | 7 | 220 |
+| champo hair growth serum | 8 | 1,552 |
+| soapbox hair growth serum | 9 | 13 |
+| soapbox shampoo | 10 | 732 |
+| soapbox progro | 11 | 14 |
+| thickening serum | 12 | 51 |
+| inde wild hair oil | 13 | 481 |
+| nioxin thickening treatment | 14 | 2 |
+| soap box soaps | 15 | 4 |
+| soap box shampoo and conditioner | 16 | 7 |
+| soapbox pro density | 17 | 1 |
+| soapbox progro density | 18 | 1 |
+| soap box shampoo and conditioner | 19 | 423 |
+| soapbox hair products | 20 | 236 |
+| hair growth oil | 21 | 29,615 |
+| hair thickening serum | 22 | 1,037 |
+| sérum para el cabello | 23 | 1,416 |
+| soap box shampoo | 24 | 378 |
+| soapbox hand soap | 25 | 536 |
+
+**Key takeaways for seed keyword selection:**
+- High-volume category terms to prioritize: "hair growth serum" (34K), "hair growth oil" (29.6K), "nutrafol" (26K), "hair serum" (19.7K), "scalp serum" (9.5K)
+- Competitor terms shoppers use alongside Soapbox: nutrafol, champo, inde wild, nioxin
+- Branded searches are low-volume — category search is how shoppers find the product on Amazon
+- Spanish-language search ("sérum para el cabello") signals a bilingual audience opportunity
+
+---
+
 ## Skill Workflow
 
 ### Phase 1: Extract Seed Keywords from Customer Language
@@ -53,10 +93,11 @@ Use the tool functions in `src/tools/keywords.ts` to write results to the databa
    OR body LIKE '%scalp%' OR body LIKE '%serum%'
    LIMIT 200;
    ```
-4. Compile a list of 20-30 seed keywords, organized by theme:
-   - **Category:** hair growth serum, scalp serum, hair density serum
-   - **Problem:** thinning hair treatment, hair loss products, hair shedding
-   - **Comparison:** divi scalp serum reviews, vegamour vs divi, best hair growth serum
+4. Cross-reference with the **Amazon Search Query Performance Data** table above. Ensure the high-volume Amazon terms (hair growth serum, hair serum, scalp serum, hair growth oil, hair thickening serum) are included in your seed list. Also note competitor terms that Amazon shoppers use (nutrafol, champo, inde wild, nioxin) — these signal which brands Soapbox competes against at the point of purchase.
+5. Compile a list of 20-30 seed keywords, organized by theme:
+   - **Category:** hair growth serum, scalp serum, hair density serum, hair growth oil
+   - **Problem:** thinning hair treatment, hair loss products, hair shedding, thickening serum
+   - **Comparison:** divi scalp serum reviews, vegamour vs divi, best hair growth serum, nutrafol
    - **Ingredient:** biotin hair serum, redensyl serum, peptide hair treatment
    - **Question:** does hair serum work, how long hair growth serum results
 
@@ -205,13 +246,20 @@ FROM keyword_rankings GROUP BY cluster;
    - "hair growth serum before and after" → user gallery / case study page
    - "biotin vs redensyl for hair growth" → ingredient comparison guide
 
-7. **ProGRO Ranking Status**
+7. **Amazon vs Google Cross-Reference**
+   Compare the Amazon Search Query Performance data (from the table at the top of this skill) with the Google SERP data collected in Phase 2:
+   - **High-volume on both platforms:** Keywords with high Amazon volume AND strong Google search volume — these are the highest-priority targets (e.g., "hair growth serum", "scalp serum")
+   - **Amazon-heavy, Google-weak:** Keywords where Amazon volume is high but ProGRO doesn't rank on Google — SEO content opportunities to capture demand that currently only flows through Amazon
+   - **Branded search insight:** Amazon branded searches (soapbox, soapbox progro) are low-volume compared to category terms — most Amazon discovery happens through category search, not brand search. Note implications for Amazon listing optimization vs Google SEO.
+   - **Competitor signals:** Which competitor names appear in Amazon search data (nutrafol, champo, nioxin, inde wild) and how they compare to Google SERP competitors
+
+8. **ProGRO Ranking Status**
    - Keywords where `soapboxsoaps.com` appears in top 10
    - Keywords where ProGRO is absent but should rank
    - Recommended next steps for each gap
 
 8. **Methodology**
-   - Data source: SerpAPI Google Search + Google Trends (or "cached data snapshot" if fallback used)
+   - Data source: SerpAPI Google Search + Google Trends (or "cached data snapshot" if fallback used) + Amazon Search Query Performance (March 2026 export)
    - Date of data pull
    - Number of keywords checked
    - Location: United States

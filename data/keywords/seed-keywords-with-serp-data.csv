@@ -1,38 +1,29 @@
 keyword,position,search_volume,url,intent,cluster
-hair growth serum,3,12100,https://www.vegamour.com/products/gro-hair-serum,commercial,hair growth
-best hair growth serum,5,8100,https://www.byrdie.com/best-hair-growth-serums,commercial,hair growth
-hair growth serum for women,7,4400,https://www.vegamour.com/products/gro-hair-serum,commercial,hair growth
-hair growth products,4,6600,https://www.healthline.com/health/hair-growth-products,commercial,hair growth
-hair density serum,12,1900,https://www.sephora.com/product/hair-density-serum,commercial,hair growth
-thinning hair treatment,6,5400,https://www.healthline.com/health/thinning-hair-treatment,commercial,thinning
-best products for thinning hair,8,3600,https://www.allure.com/gallery/best-products-thinning-hair,commercial,thinning
-hair loss serum,4,4400,https://www.vegamour.com/products/gro-hair-serum,commercial,thinning
-thinning hair women over 40,15,2400,https://www.webmd.com/skin-problems-and-treatments/hair-loss/women-hair-loss,informational,thinning
-hair shedding treatment,18,1300,https://www.aad.org/public/diseases/hair-loss/treatment/tips,informational,thinning
-scalp serum,3,5400,https://www.cosmopolitan.com/style-beauty/beauty/g38380072/best-scalp-serums/,commercial,scalp care
-scalp treatment for hair growth,9,2900,https://www.healthline.com/health/scalp-treatment-hair-growth,commercial,scalp care
-healthy scalp products,14,1600,https://www.byrdie.com/best-scalp-products,commercial,scalp care
-divi scalp serum,1,22200,https://diviofficial.com/products/scalp-serum,navigational,branded
-divi scalp serum reviews,2,6600,https://diviofficial.com/products/scalp-serum,commercial,branded
-vegamour gro hair serum,1,8100,https://www.vegamour.com/products/gro-hair-serum,navigational,branded
-vegamour reviews,3,4400,https://www.vegamour.com/pages/reviews,commercial,branded
-divi vs vegamour,4,3600,https://www.byrdie.com/divi-vs-vegamour,commercial,comparison
-best hair serum brands,6,2900,https://www.allure.com/gallery/best-hair-serums,commercial,comparison
-hair growth serum comparison,11,1300,https://www.cosmopolitan.com/style-beauty/beauty/g39702487/hair-growth-serums-compared/,commercial,comparison
-divi hair serum vs nutrafol,8,1600,https://www.womenshealthmag.com/beauty/a44527932/divi-vs-nutrafol/,commercial,comparison
-biotin hair serum,7,2400,https://www.healthline.com/health/biotin-hair-growth,commercial,ingredients
-redensyl hair serum,16,880,https://www.ncbi.nlm.nih.gov/pmc/articles/redensyl-study,informational,ingredients
-peptide hair treatment,19,720,https://www.allure.com/story/peptides-for-hair-growth,informational,ingredients
-natural hair growth ingredients,13,1900,https://www.medicalnewstoday.com/articles/natural-hair-growth,informational,ingredients
-does hair growth serum work,2,3600,https://www.healthline.com/health/does-hair-serum-work,informational,education
-how long for hair serum results,10,1600,https://www.byrdie.com/how-long-hair-growth-serum-results,informational,education
-hair growth serum before and after,5,2900,https://www.vegamour.com/pages/before-and-after,commercial,education
-hair growth serum side effects,9,1300,https://www.webmd.com/skin-problems-and-treatments/hair-loss/hair-serum-side-effects,informational,education
-what causes hair thinning in women,7,2400,https://www.mayoclinic.org/diseases-conditions/hair-loss/symptoms-causes,informational,education
-best hair serum for postpartum hair loss,14,1600,https://www.whattoexpect.com/first-year/postpartum-health/postpartum-hair-loss/,commercial,thinning
-hair regrowth serum that actually works,11,2400,https://www.allure.com/gallery/best-hair-regrowth-treatments,commercial,hair growth
-affordable hair growth serum,17,990,https://www.cosmopolitan.com/style-beauty/beauty/g44152248/affordable-hair-growth-serums/,commercial,hair growth
-buy hair growth serum online,22,590,https://www.amazon.com/s?k=hair+growth+serum,transactional,hair growth
-hair serum subscription,25,320,https://www.vegamour.com/products/gro-hair-serum,transactional,hair growth
-hormonal hair loss treatment,8,2900,https://www.healthline.com/health/hormonal-hair-loss,informational,thinning
-stress hair loss remedies,12,1900,https://www.webmd.com/skin-problems-and-treatments/hair-loss/stress-hair-loss,informational,thinning
+"rosemary oil hair growth",,74000,https://www.healthline.com/health/rosemary-oil-for-hair,informational,Ingredients
+"hair serum",,60500,https://www.amazon.com/,commercial,"Hair growth"
+"hair growth oil",,40500,https://www.amazon.com/,commercial,"Hair growth"
+"hair growth serum",,33100,https://vegamour.com/products/gro-hair-serum,commercial,"Hair growth"
+"best hair growth serum 2026",,27100,https://www.ulta.com/discover/hair/best-products-for-hair-growth,commercial,Comparison
+"thinning hair treatment",,22200,https://www.mayoclinic.org/diseases-conditions/hair-loss/diagnosis-treatment/drc-20372932,informational,Thinning/loss
+"divi scalp serum reviews",,22200,https://www.thequalityedit.com/articles/divi-scalp-serum-review,commercial,Comparison
+"scalp serum",,18100,https://www.elle.com/beauty/hair/a70855153/best-scalp-serums-for-hair-growth/,commercial,"Scalp care"
+"hair loss serum",,14800,https://www.sephora.com/shop/thinning-hair-loss,commercial,Thinning/loss
+"best product for thinning hair",,14800,https://www.ulta.com/shop/hair/treatment/hair-thinning-hair-loss,commercial,Thinning/loss
+"postpartum hair loss treatment",,12100,https://www.healthline.com/health/parenting/best-postpartum-hair-products,informational,Thinning/loss
+"hair growth serum before and after",,9900,https://www.youtube.com/watch?v=ElyDRahgBZ8,commercial,Education
+"hair thickening serum",,8100,https://www.amazon.com/thickening-hair-serum/s?k=thickening+hair+serum,commercial,Thinning/loss
+"vegamour vs divi",,8100,https://scandinavianbiolabs.co.uk/,commercial,Comparison
+"hair shedding treatment",,6600,https://www.mayoclinic.org/diseases-conditions/hair-loss/diagnosis-treatment/drc-20372932,informational,Thinning/loss
+"nutrafol hair serum review",,6600,https://www.amazon.com/Nutrafol-Supports-Stronger-Lightweight-Fast-Absorbing/dp/B09MDVYR96,commercial,Comparison
+"biotin hair serum",,6600,https://lusetabeauty.com/products/luseta-biotin-b-complex-hair-serum,commercial,Ingredients
+"is minoxidil safe for women",,6600,https://pmc.ncbi.nlm.nih.gov/articles/PMC12007657/,informational,Education
+"hair density serum",,4400,https://theordinary.com/en-us/multi-peptide-serum-for-hair-density-hair-scalp-treatment-100434.html,commercial,"Hair growth"
+"does hair growth serum work",,4400,https://www.today.com/shop/do-hair-growth-serums-work-rcna203368,informational,Education
+"redensyl hair serum",,3600,https://www.amazon.com/redensyl-hair-growth-serum/s,commercial,Ingredients
+"peptide hair treatment",,3600,https://theordinary.com/en-us/multi-peptide-serum-for-hair-density-hair-scalp-treatment-100434.html,commercial,Ingredients
+"how long for hair growth serum results",,3600,https://www.reddit.com/r/Haircare/comments/1hk4gai/,informational,Education
+"hair growth serum side effects",,2900,https://www.goodrx.com/minoxidil/topical-minoxidil-side-effects,informational,Education
+"baby hairs hair growth",,2400,https://www.reddit.com/r/longhair/comments/13rdaj6/,informational,Education
+"divi vs vegamour vs ordinary",,2400,https://www.glamour.com/gallery/best-hair-growth-serum,commercial,Comparison
+"soapbox hair growth serum",1,390,https://www.soapboxsoaps.com/products/oh-my-growth-vitamin-booster-treatment,navigational,Branded
+"progro density plus serum",,210,https://www.tiktok.com/@soapboxcare/video/7607928004542582030,navigational,Branded
