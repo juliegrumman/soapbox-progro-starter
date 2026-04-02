@@ -55,7 +55,36 @@ Claude will create a `.env` file with your API key. This is how you give Claude 
 I don't have a SerpAPI key. Use the fallback keyword data instead.
 ```
 
-## Step 3: Wire Up the Session 2 Skill
+## Step 3: Build Your API Client
+
+In Session 1, we used pre-written Python scrapers. This time, **you're going to have Claude build the API connection from scratch** — so you can replicate this pattern for any API you work with.
+
+Paste this prompt into Claude Code:
+
+```
+I need to connect to the SerpAPI Google Search API from this project. Here's what I need:
+
+1. A config module that loads API keys from .env using the dotenv package (it's already in package.json). It should export a function that returns the key, or null if it's missing.
+
+2. A reusable fetch wrapper with retry logic (3 attempts with backoff), rate limiting (1 second between calls), and a 15-second timeout. It should return typed success/error results, not throw exceptions.
+
+3. A SerpAPI client that uses the config and fetch wrapper to call two endpoints:
+   - Google Search: https://serpapi.com/search.json (params: q, api_key, engine=google, location=United States, num=10)
+   - Google Trends: https://serpapi.com/search.json (params: engine=google_trends, q, api_key, data_type=TIMESERIES, geo=US)
+
+Put these in src/clients/ (config.ts, base-client.ts, serpapi.ts). Follow the same patterns as the existing src/tools/ files. If there's no API key, the functions should return null instead of throwing — that's how the skill knows to use fallback data.
+```
+
+Watch what Claude builds. You'll see it create three files:
+- **`config.ts`** — loads your `.env` and exports key getters
+- **`base-client.ts`** — handles the HTTP plumbing (retries, rate limits, timeouts)
+- **`serpapi.ts`** — the actual SerpAPI client with typed responses
+
+**What just happened:** You gave Claude a clear description of what you needed — the API endpoints, the behavior you wanted (retry, rate limiting, null instead of throwing), and where to put the files. Claude handled the implementation details. This is the pattern for connecting to **any** REST API: describe the endpoints, the auth method, and the error handling behavior you want.
+
+**The reusable lesson:** Next time you need to connect to a different API (Ahrefs, Google PageSpeed, Shopify, whatever), you can use the same prompt structure: describe the endpoints, say how auth works, tell Claude where to put the code and what patterns to follow. The `base-client.ts` you just built will work for any of them.
+
+## Step 4: Wire Up the Session 2 Skill
 
 Type this into Claude Code:
 
@@ -67,7 +96,7 @@ Claude will copy the skill template into the active skills directory.
 
 **What just happened:** Skills in the `skill-templates/` folder are blueprints. Copying one to `skills/` tells Claude Code "this is a capability you can use." Same pattern we used in Session 1 — the skill-template approach lets you add new abilities to your project one at a time.
 
-## Step 4: Warm-Up — Bridge from Session 1
+## Step 5: Warm-Up — Bridge from Session 1
 
 Type this prompt:
 
@@ -79,7 +108,7 @@ Claude will either read the Session 1 report (if it exists in `reports/`) or que
 
 **What just happened:** Claude is pulling from work we did last session. The database and reports persist between sessions — this is the power of the shared SQLite database. Each session builds on the last.
 
-## Step 5: Run the SEO Keyword Research
+## Step 6: Run the SEO Keyword Research
 
 This is the main event. Type this prompt:
 
@@ -98,7 +127,7 @@ Claude will now:
 
 **This takes several minutes.** Watch the terminal — you'll see live API calls to Google as each keyword is checked. This is Claude reaching outside your local project to pull real-time search data.
 
-## Step 6: Explore Your Results
+## Step 7: Explore Your Results
 
 Your report is saved at:
 
@@ -137,7 +166,8 @@ Are there any keywords where soapboxsoaps.com already ranks?
 
 ## What You Learned Today
 
-- **API connections:** Claude Code can call external APIs like SerpAPI — or any REST API with an endpoint and key
+- **Building API clients with Claude:** You described what you needed (endpoints, auth, error behavior) and Claude built the implementation. This prompt pattern works for any REST API.
+- **The client module pattern:** `config.ts` loads keys, `base-client.ts` handles HTTP plumbing, `serpapi.ts` is the API-specific layer. When you need a new API, you add one file — the base layers are reusable.
 - **Environment variables:** The `.env` file is how you securely pass API keys to Claude Code
 - **Skills as building blocks:** Each skill template adds a new capability. Copy to `skills/` to activate.
 - **Cross-session data:** Session 2 reads Session 1's customer language and builds on it. The SQLite database is the shared memory between sessions.

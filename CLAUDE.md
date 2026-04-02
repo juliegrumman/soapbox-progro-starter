@@ -86,6 +86,11 @@ ORDER BY search_volume DESC;
 - `src/tools/reviews.ts` — Functions: `getReviews()`, `getReviewCountsByCompetitor()`, `getRatingDistribution()`, `getReviewsByRating()`, `searchReviews()`, `updateReviewEnrichment()`, `insertReview()`
 - `src/tools/keywords.ts` — Functions: `getKeywords()`, `getKeywordsByCluster()`, `getKeywordsByIntent()`, `getKeywordsByPositionRange()`, `searchKeywords()`, `upsertKeyword()`, `insertKeywordBatch()`
 
+## Available API Clients (TypeScript)
+- `src/clients/config.ts` — Centralized env loading via `dotenv`. Functions: `getSerpApiKey()`, `getPageSpeedApiKey()`
+- `src/clients/base-client.ts` — Shared fetch wrapper with retry, rate limiting, timeout. Function: `apiFetch<T>(url)`
+- `src/clients/serpapi.ts` — SerpAPI client. Functions: `searchGoogle(keyword)`, `getGoogleTrends(keyword)`, `searchBatch(keywords)`. Returns `null` if no API key is set (triggers fallback to cached data).
+
 ## Key Commands
 ```bash
 npm run seed          # Re-import review CSVs into SQLite

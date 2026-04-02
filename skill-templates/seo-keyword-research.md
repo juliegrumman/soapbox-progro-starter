@@ -106,52 +106,39 @@ The following keywords come from the client's Amazon Brand Analytics Search Quer
 **Goal:** Pull current Google SERP data for each seed keyword.
 
 **Process:**
-1. Read the SerpAPI key:
+1. Use the SerpAPI client module to search for each seed keyword:
    ```typescript
-   import { readFileSync } from 'fs';
-   const envContent = readFileSync('.env', 'utf-8');
-   const apiKey = envContent.match(/SERPAPI_KEY=(.+)/)?.[1]?.trim();
+   import { searchGoogle, getGoogleTrends, searchBatch } from './src/clients/serpapi.js';
    ```
 
-2. If no API key is found, skip to the **Fallback** section below.
-
-3. For each seed keyword, call the SerpAPI Google Search endpoint:
+2. For bulk searching, use `searchBatch()` which handles rate limiting (1s between calls) and progress logging automatically:
    ```typescript
-   const url = new URL('https://serpapi.com/search.json');
-   url.searchParams.set('q', keyword);
-   url.searchParams.set('api_key', apiKey);
-   url.searchParams.set('engine', 'google');
-   url.searchParams.set('location', 'United States');
-   url.searchParams.set('num', '10');
-
-   const response = await fetch(url.toString());
-   const data = await response.json();
+   const results = await searchBatch(seedKeywords);
+   // Returns null if no API key is configured — trigger fallback
+   if (results === null) {
+     console.log('No SerpAPI key found. Using cached keyword data.');
+     // skip to Fallback section below
+   }
    ```
 
-4. From each response, extract:
-   - `organic_results[]` — position, title, link, snippet for the top 10 results
+3. From each result, extract:
+   - `organicResults[]` — position, title, link, snippet for the top 10 results
    - Check if any result URL contains `soapboxsoaps.com` (ProGRO ranking)
    - Check if any result URL contains competitor domains: `diviofficial.com`, `vegamour.com`, `theordinary.com`, `nutrafol.com`
    - Record the top-ranking URL for each keyword
 
-5. For search volume, use the SerpAPI Google Trends endpoint for a subset of keywords (~15 highest-priority):
+4. For search volume, use the Google Trends endpoint for a subset of keywords (~15 highest-priority):
    ```typescript
-   const trendsUrl = new URL('https://serpapi.com/search.json');
-   trendsUrl.searchParams.set('engine', 'google_trends');
-   trendsUrl.searchParams.set('q', keyword);
-   trendsUrl.searchParams.set('api_key', apiKey);
-   trendsUrl.searchParams.set('data_type', 'TIMESERIES');
-   trendsUrl.searchParams.set('geo', 'US');
+   const trends = await getGoogleTrends(keyword);
+   // Returns typed { keyword, timeline, averageInterest }
    ```
    Use the relative interest values to estimate comparative search volume across keywords.
 
-6. **Rate limiting:** Add a 1-second delay between API calls. Budget ~30 search queries + ~15 trends queries = ~45 total (well within the 100/month free tier).
-
-7. Log progress to the terminal as each keyword is checked so the user can see live results coming back.
+5. **Budget:** ~30 search queries + ~15 trends queries = ~45 total (well within the 100/month free tier). Rate limiting is handled by the client module.
 
 ### Phase 2 Fallback: No API Key or Offline Mode
 
-If `SERPAPI_KEY` is not set in `.env`, or if the API returns errors:
+If `searchBatch()` or `searchGoogle()` returns `null` (no API key), or returns `{ success: false }` (API error):
 
 1. Log a clear message: "No SerpAPI key found (or API error). Using cached keyword data."
 2. Check for `data/keywords/seed-keywords-with-serp-data.csv`
