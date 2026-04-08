@@ -33,7 +33,44 @@ git clone <repo-url> soapbox-progro
 cd soapbox-progro && npm install && claude
 ```
 
-## Step 2: Connect the Reddit MCP Server
+## Step 2: Security Check — Scan Before You Install
+
+Before connecting any third-party MCP server, take a moment to vet it. MCP servers are arbitrary code that runs on your machine with your user permissions. Treat installing one like installing any open-source package — inspect it first.
+
+**2a. Inspect the MCP package before installing**
+
+The Reddit MCP we'll use is `mcp-reddit` — a community-built, open-source package. It is **not** an official Reddit product. Before installing, ask Claude:
+
+```
+Fetch the PyPI page for mcp-reddit and tell me: who is the author, when was it last updated, how many downloads does it have, and is there a GitHub repo I can inspect?
+```
+
+**What to look for:**
+- **Author & maintainers** — Is there an identifiable person or organization? Do they maintain other packages?
+- **Download count & age** — A package with 400 downloads/month is riskier than one with 40,000. A package less than 6 months old hasn't been widely battle-tested.
+- **Source availability** — Is the code on GitHub where you can read it? No public repo is a red flag.
+- **What it actually does** — `mcp-reddit` scrapes `old.reddit.com` rather than using the official Reddit API. This means no auth is needed (convenient for us), but it could break if Reddit changes their HTML, and may violate Reddit's Terms of Service.
+- **Permissions** — Does it read files, write to disk, or make unexpected network calls? For deeper inspection, you can download without installing and scan the source:
+
+```bash
+pip download mcp-reddit --no-deps -d /tmp/inspect
+unzip /tmp/inspect/*.whl -d /tmp/inspect/src
+grep -r "subprocess\|os.system\|eval\|exec(" /tmp/inspect/src
+```
+
+**The bottom line:** There is no "app store review process" for MCP servers today. For a read-only Reddit scraper in a training context, the risk is low. For anything touching credentials, databases, or write operations in production, you'd want much more scrutiny. The fallback data path (Step 2b below) exists so you're never forced to install something you're not comfortable with.
+
+**2b. Decide: live MCP or fallback data?**
+
+If you're comfortable with the `mcp-reddit` package, proceed to Step 3. If you'd rather skip the third-party install, use the pre-baked fallback data instead:
+
+```
+The Reddit MCP isn't working. Seed the fallback Reddit data by running npm run seed:reddit
+```
+
+Then skip to Step 5.
+
+## Step 3: Connect the Reddit MCP Server
 
 **Exit Claude Code first** (press `Ctrl+C` or type `/exit`), then run this terminal command:
 
@@ -57,15 +94,9 @@ You should see tools like `search_reddit`, `get_reddit_post`, and `get_subreddit
 
 **What just happened:** In Sessions 1-2, Claude used built-in tools (file reading, database queries, API calls). You just extended Claude's capabilities by connecting an MCP server. MCP (Model Context Protocol) servers are how you give Claude access to external systems — Reddit today, but the same pattern works for Slack, GitHub, databases, and hundreds of other integrations.
 
-**Can't get the MCP working?** That's OK — we have fallback data. Tell Claude:
+**Can't get the MCP working?** That's OK — go back to Step 2d and use the fallback data instead.
 
-```
-The Reddit MCP isn't working. Seed the fallback Reddit data by running npm run seed:reddit
-```
-
-Then skip to Step 4.
-
-## Step 3: Warm-Up — Test the Connection
+## Step 4: Warm-Up — Test the Connection
 
 Try a live Reddit search:
 
@@ -77,7 +108,7 @@ You should see real Reddit threads come back. This is Claude reaching into Reddi
 
 **If using fallback data:** Skip this step — your data is already in the database from the seed command.
 
-## Step 4: Build the Tool File
+## Step 5: Build the Tool File
 
 This is the first "you build it" step. Instead of using a pre-built tool file, you'll create one.
 
@@ -116,7 +147,7 @@ Show me the getThreadsByBrand function you just created. How does it search for 
 - Has `insertThread` that adds a `foundAt` timestamp (like `scrapedAt` in reviews and `checkedAt` in keywords)
 - Has `searchThreads` that uses LIKE on both title and body
 
-## Step 5: Design the Agent Brief
+## Step 6: Design the Agent Brief
 
 Now for the biggest shift from Sessions 1-2. Instead of copying a pre-built skill, you'll design how the agent should behave — including a loop that lets it evaluate its own progress and decide when it's done.
 
@@ -167,7 +198,7 @@ Read the skill template you just created. Walk me through what happens in Phase 
 
 But here's a question worth holding: **what's actually enforcing that loop?** We'll come back to this.
 
-## Step 6: Run the Agent
+## Step 7: Run the Agent
 
 Activate the skill:
 
@@ -214,7 +245,7 @@ This is the agent **reasoning about its own coverage** and deciding to search ag
 
 **If using fallback data:** The agent skips the live Reddit search and works from the seed data, but still performs the cross-referencing and report generation.
 
-## Step 7: Explore Your Results
+## Step 8: Explore Your Results
 
 Your report is saved at:
 
@@ -240,7 +271,7 @@ Are there topics that Reddit users discuss that DIDN'T appear in our competitor 
 Show me the highest-engagement Reddit threads about hair growth. What makes these conversations resonate?
 ```
 
-## Step 8: Verify the Data
+## Step 9: Verify the Data
 
 Run these verification queries to make sure everything landed correctly:
 
@@ -252,7 +283,7 @@ Run these database queries and show me the results:
 4. Show me one thread that mentions a keyword from our Session 2 keyword research.
 ```
 
-## Step 9: The Gap — Who's Actually in Charge?
+## Step 10: The Gap — Who's Actually in Charge?
 
 Now for the important question. Let's stress-test what we built.
 
@@ -270,7 +301,7 @@ This is the difference between:
 
 What we built today is a **soft agent**: agentic behavior driven by a prompt. It usually works well. But in production — where reliability matters, where you're running this weekly, where bad data costs money — you need the loop in code, not in the prompt.
 
-## Step 10: From Prompt to Code
+## Step 11: From Prompt to Code
 
 Here's what that looks like. **You don't need to build this** — just read it and understand the difference.
 
@@ -429,7 +460,7 @@ Ask Claude to check: `Run npx tsc --noEmit and fix any TypeScript errors in src/
 Make sure the CSV file exists at `data/reddit/seed-reddit-threads.csv`. If it's missing, the repo may need to be re-cloned.
 
 **The agent didn't loop — it just searched once and moved on**
-This can happen with the soft agent approach — the loop is in the prompt, not in code. Try running again with an explicit nudge: `Run the Reddit social listening skill. Make sure to evaluate your coverage after each search round and search again if you have gaps in subreddit coverage, brand mentions, or sentiment diversity.` This is exactly the limitation we discuss in Step 9.
+This can happen with the soft agent approach — the loop is in the prompt, not in code. Try running again with an explicit nudge: `Run the Reddit social listening skill. Make sure to evaluate your coverage after each search round and search again if you have gaps in subreddit coverage, brand mentions, or sentiment diversity.` This is exactly the limitation we discuss in Step 10.
 
 ## Homework
 
@@ -440,7 +471,7 @@ Review the social listening brief. Find the cross-channel insights section — t
 
 Pick your top 3 Reddit-sourced insights and bring them to Session 4.
 
-**Bonus:** Look at the Agent SDK snippet from Step 10. If you were to move one of your Session 1-2 skills from a skill template to code, which one would benefit most from having the loop enforced programmatically? Why?
+**Bonus:** Look at the Agent SDK snippet from Step 11. If you were to move one of your Session 1-2 skills from a skill template to code, which one would benefit most from having the loop enforced programmatically? Why?
 
 ## What's Next
 
