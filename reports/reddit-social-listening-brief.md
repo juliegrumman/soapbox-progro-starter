@@ -1,8 +1,8 @@
 # Reddit Social Listening Brief: Hair Growth & Scalp Care
 
 **Generated:** April 8, 2026
-**Threads Analyzed:** 41
-**Subreddits Covered:** 8 scraped, 5 with relevant threads
+**Threads Analyzed:** 48
+**Subreddits Covered:** 9 scraped, 6 with relevant threads
 **Data Sources:** Reddit MCP Server, `competitive_reviews` table (21,011 reviews), `keyword_rankings` table
 **Date Range of Reddit Data:** January 2026 -- April 2026
 
@@ -14,7 +14,7 @@
 
 2. **Minoxidil dominates the treatment conversation -- and its failure stories create a massive opening.** 25 of 41 collected threads mention minoxidil. Side effects (dread shed, dizziness, chest tightness, sleep disruption, hypertrichosis) and treatment fatigue are the most discussed topics. A non-pharmaceutical alternative that doesn't require lifetime commitment is the #1 unmet need on Reddit.
 
-3. **Divi is invisible on Reddit despite having 12,789 reviews.** Zero mentions of Divi across 800+ scraped posts and 5,000+ comments from 8 subreddits. Vegamour appears once. This suggests both brands' awareness is driven by paid social/influencer, not organic community discussion. ProGRO has an opportunity to build authentic Reddit presence that competitors haven't pursued.
+3. **Divi's Reddit presence is concentrated in a hostile snark community, not hair care subreddits.** Zero Divi mentions appear in general hair care communities (r/FemaleHairLoss, r/Haircare, etc.), but 7 high-engagement threads exist in r/DaniAustin -- a community centered on the founder. The dominant narrative is "snake oil" and "she wears extensions while selling a hair growth product" (117 upvotes). All 7 Divi threads are negative. Divi's brand awareness is entirely influencer-driven, and its organic Reddit sentiment is toxic. ProGRO can build authentic presence in treatment communities where Divi doesn't exist.
 
 4. **The Ordinary and Nutrafol are the most organically discussed hair growth brands**, but with mixed-to-negative sentiment. Nutrafol is described as producing "lukewarm results" and frequently abandoned. The Ordinary's Hair Density Serum is discussed as an affordable option but users question if it actually works.
 
@@ -76,6 +76,7 @@
 | **r/Haircare** | 4 | 7.3 | Neutral (75%) | General shedding concerns, oil recommendations, diet & hair health |
 | **r/HaircareScience** | 4 | 15.0 | Neutral (100%) | Evidence-based skepticism, LLLT research, ingredient analysis |
 | **r/Longhair** | 3 | 2.7 | Mixed | Postpartum texture changes, TE recovery, male thinning concerns |
+| **r/DaniAustin** | 7 | 37.9 | Negative (100%) | Divi founder snark, extensions/credibility accusations, "snake oil" narrative, competitive threats (Reale Actives), paid promotion skepticism |
 | **r/CurlyHair** | 0 direct | -- | -- | Hair growth not a primary topic; styling/routine focused |
 | **r/VeganBeauty** | 0 direct | -- | -- | Clean beauty but no hair growth serum threads in recent posts |
 | **r/WavyHair** | 0 direct | -- | -- | Styling only; fine-hair-specific concerns present but not loss-focused |
@@ -128,8 +129,18 @@
 - **Context:** Viewed with skepticism by treatment-savvy users. Frequently tried and abandoned in favor of pharmaceuticals
 - **Notable quote:** "Studies have shown 2% [minoxidil] is as useful as rosemary oil. Meaning not much." (5 upvotes)
 
-### Divi -- 0 mentions
-- **Key finding:** The #1 competitor by review volume (12,789 reviews, 4.56 avg rating) has zero organic Reddit presence across 800+ posts and 5,000+ comments from 8 subreddits. Divi's brand awareness appears entirely driven by paid social, influencer marketing, and platform reviews -- not authentic community discussion. This is both a vulnerability for Divi and an opportunity for ProGRO.
+### Divi -- 7 thread mentions (all in r/DaniAustin)
+- **Sentiment:** 100% negative (7/7 threads)
+- **Where it lives:** Not in hair care communities -- exclusively in r/DaniAustin, a snark/gossip subreddit about the founder. Zero Divi mentions in r/FemaleHairLoss, r/Haircare, r/HaircareScience, or any treatment-focused community.
+- **Most common complaints:** Founder wears extensions while marketing a hair growth product ("If the products worked, she wouldn't need hair extensions"), "snake oil" accusations (3 separate threads), paid influencer promotion skepticism, capsule technology quietly dropped
+- **Most common praise:** One defender was downvoted to -8 ("I have used Divi since it launched. My hairdresser tells me all the time how healthy my hair is")
+- **Competitive threat:** Alix Earle's Reale Actives brand identified as a visual copycat, causing community speculation about lawsuits
+- **Notable quotes:**
+  - "This is Divi hard at work! I can't believe she is the creator of a hair growth company and this is what her hair looks like" (117 upvotes)
+  - "There is no 'real Divi growth' because Divi $hit is snake oil. If the products worked, she wouldn't need hair extensions" (10 upvotes)
+  - "She's the modern equivalent of 18th and 19th-century medicine shows and snake-oil salesmen" (18 upvotes)
+  - "Brittany Mahomes is only a divi queen because you pay her to advertise it / she gets it for free" (11 upvotes)
+- **Key insight:** Divi has the highest review volume (12,789) and rating (4.56) in the competitive set, but its organic Reddit presence is entirely negative and concentrated in a founder-snark community. The disconnect between platform reviews (overwhelmingly positive) and Reddit discussion (unanimously hostile) suggests Divi's review base may be heavily influenced by incentivized/influencer-driven reviews, while Reddit captures authentic consumer skepticism. This is a major brand fragility -- Divi's reputation is one viral "founder wears extensions" TikTok away from mainstream awareness of this narrative.
 
 ---
 
@@ -241,8 +252,8 @@ Reddit users are stacking 5-10 products because no single brand gives them confi
 ### 6. Lead with Emotional Validation, Not Just Efficacy Claims
 The highest-engagement Reddit threads are emotional, not product-focused. ProGRO content that starts with "We know hair loss changes how you see yourself" before pivoting to product claims will resonate more than leading with "93% saw visible results."
 
-### 7. Leverage the Divi Reddit Gap
-Divi has zero organic Reddit presence despite 12,789 reviews. If ProGRO builds authentic Reddit awareness before Divi does, it can become the community's recommended alternative -- a position that's very difficult for a competitor to displace once established.
+### 7. Leverage the Divi Credibility Crisis
+Divi's only organic Reddit presence is unanimously hostile -- concentrated in r/DaniAustin where the founder is accused of wearing extensions while selling a hair growth product. Meanwhile, Divi has zero presence in the treatment communities (r/FemaleHairLoss, r/Haircare) where real product decisions happen. ProGRO can occupy both spaces Divi can't: (1) authentic treatment community presence with transparent, science-backed messaging, and (2) a founder/brand story that doesn't rely on a single influencer personality. The "snake oil" narrative around Divi is an ambient tailwind for any competitor that leads with honesty about what a serum can and can't do.
 
 ---
 
@@ -250,11 +261,11 @@ Divi has zero organic Reddit presence despite 12,789 reviews. If ProGRO builds a
 
 - **Data sources:** Reddit MCP Server (live scraping), `competitive_reviews` table (21,011 reviews from Divi, Vegamour, The Ordinary, Nutrafol, Hers), `keyword_rankings` table (28 keywords)
 - **Date of collection:** April 8, 2026
-- **Subreddits scraped (8):** r/thinHair (0 posts), r/haircare (100), r/haircarescience (100), r/longhair (100), r/curlyhair (100), r/veganbeauty (100), r/femalehairloss (100), r/wavyhair (100), r/sallybeautysupply (100)
+- **Subreddits scraped (9):** r/thinHair (0 posts), r/haircare (100), r/haircarescience (100), r/longhair (100), r/curlyhair (100), r/veganbeauty (100), r/femalehairloss (100), r/wavyhair (100), r/sallybeautysupply (100), r/DaniAustin (100 -- Divi founder community, added after user feedback that Divi discussions live under the founder's name)
 - **Search terms used (14):** hair growth serum, thinning hair treatment, postpartum hair loss, Divi scalp serum, Vegamour, hair shedding, scalp serum, The Ordinary hair serum, minoxidil side effects, rosemary oil hair growth, baby hairs growing back, hair density, Nutrafol, hair loss help
 - **Additional searches:** serum, thinning, rosemary oil, hair shedding, postpartum hair, hair density, Nutrafol, Ordinary hair, Hers hair loss
 - **Classification approach:** Agent-determined sentiment (positive/negative/neutral/mixed) based on post title, body, and top comments. Brand extraction from post text and comment mentions.
-- **Threads saved:** 41 classified threads across 5 subreddits
+- **Threads saved:** 48 classified threads across 6 subreddits
 - **Limitations:**
   - Point-in-time snapshot (most recent ~100 posts per subreddit as of April 8, 2026)
   - Subreddit selection bias toward English-language, US/UK-centric communities
