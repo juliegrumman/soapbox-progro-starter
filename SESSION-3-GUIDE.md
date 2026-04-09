@@ -72,7 +72,21 @@ Then skip to Step 5.
 
 ## Step 3: Connect the Reddit MCP Server
 
-**Exit Claude Code first** (press `Ctrl+C` or type `/exit`), then run this terminal command:
+**Exit Claude Code first** (press `Ctrl+C` or type `/exit`).
+
+First, make sure you have `uv` installed (the Python package manager that provides `uvx`):
+
+```
+brew install uv
+```
+
+If you don't have Homebrew, use the universal installer instead:
+
+```
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Then add the Reddit MCP server:
 
 ```
 claude mcp add reddit -- uvx mcp-reddit
