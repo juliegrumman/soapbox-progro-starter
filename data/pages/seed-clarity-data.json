@@ -1,0 +1,61 @@
+{
+  "url": "https://www.soapboxsoaps.com/pages/progro-density-plus-hair-serum",
+  "dateRange": "2026-03-15 to 2026-04-14",
+  "metrics": {
+    "totalSessions": 14820,
+    "totalPageviews": 18340,
+    "scrollDepth": {
+      "average": 43.2,
+      "p25": 22,
+      "p50": 41,
+      "p75": 68,
+      "p90": 88,
+      "note": "43% average means most users never see the FAQ or reviews section below the fold"
+    },
+    "engagementTime": {
+      "average": 52.8,
+      "p25": 12,
+      "p50": 38,
+      "p75": 82,
+      "p90": 145,
+      "unit": "seconds"
+    },
+    "rageClicks": {
+      "total": 847,
+      "ratePerSession": 5.7,
+      "topElements": [
+        { "selector": ".ingredient-card img", "count": 234, "note": "Users clicking ingredient images expecting zoom or modal" },
+        { "selector": ".before-after-slider", "count": 189, "note": "Before/after images not responding as expected" },
+        { "selector": ".review-stars", "count": 142, "note": "Star rating not linking to reviews section" },
+        { "selector": ".price-area .compare-text", "count": 98, "note": "Comparison text looks clickable but is static" }
+      ]
+    },
+    "deadClicks": {
+      "total": 1263,
+      "ratePerSession": 8.5,
+      "topElements": [
+        { "selector": ".hero-banner h2", "count": 312, "note": "Hero headline getting clicks — users may expect it to anchor" },
+        { "selector": ".clinical-results-text", "count": 245, "note": "Clinical results percentages look interactive" },
+        { "selector": ".ingredient-name", "count": 198, "note": "Ingredient names look like links but are plain text" },
+        { "selector": ".faq-question", "count": 156, "note": "FAQ questions not expanding on click in some browsers" }
+      ]
+    },
+    "quickBacks": {
+      "total": 2134,
+      "ratePerSession": 14.4,
+      "note": "14.4% quick-back rate is above average — some traffic source mismatch or slow initial load"
+    },
+    "deviceBreakdown": {
+      "mobile": 68.3,
+      "desktop": 26.1,
+      "tablet": 5.6
+    },
+    "topTrafficSources": [
+      { "source": "Meta Ads", "sessions": 6240, "scrollDepth": 38.1, "engagementTime": 41.2 },
+      { "source": "Google Organic", "sessions": 4120, "scrollDepth": 52.6, "engagementTime": 68.4 },
+      { "source": "Direct", "sessions": 2340, "scrollDepth": 48.9, "engagementTime": 72.1 },
+      { "source": "TikTok", "sessions": 1280, "scrollDepth": 31.4, "engagementTime": 28.6 }
+    ]
+  },
+  "_note": "This is pre-baked fallback data for when CLARITY_API_TOKEN is not set. Replace with live data by running the orchestrator with valid Clarity credentials."
+}

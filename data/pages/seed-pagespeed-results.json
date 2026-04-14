@@ -1,0 +1,89 @@
+{
+  "url": "https://www.soapboxsoaps.com/pages/progro-density-plus-hair-serum",
+  "strategy": "mobile",
+  "scores": {
+    "performance": 42,
+    "seo": 82,
+    "accessibility": 76,
+    "bestPractices": 88
+  },
+  "coreWebVitals": {
+    "lcp": 4230,
+    "cls": 0.18,
+    "fcp": 2100,
+    "inp": 312,
+    "ttfb": 890
+  },
+  "opportunities": [
+    {
+      "title": "Eliminate render-blocking resources",
+      "description": "Resources are blocking the first paint of your page. Consider delivering critical JS/CSS inline and deferring all non-critical JS/styles.",
+      "savingsMs": 1820
+    },
+    {
+      "title": "Properly size images",
+      "description": "Serve images that are appropriately-sized to save cellular data and improve load time.",
+      "savingsMs": 1340
+    },
+    {
+      "title": "Serve images in next-gen formats",
+      "description": "Image formats like WebP and AVIF often provide better compression than PNG or JPEG, which means faster downloads and less data consumption.",
+      "savingsMs": 980
+    },
+    {
+      "title": "Reduce unused JavaScript",
+      "description": "Reduce unused JavaScript and defer loading scripts until they are required to decrease bytes consumed by network activity.",
+      "savingsMs": 740
+    },
+    {
+      "title": "Reduce unused CSS",
+      "description": "Reduce unused rules from stylesheets and defer CSS not used for above-the-fold content to decrease bytes consumed by network activity.",
+      "savingsMs": 520
+    },
+    {
+      "title": "Minimize main-thread work",
+      "description": "Consider reducing the time spent parsing, compiling and executing JS. You may find delivering smaller JS payloads helps with this.",
+      "savingsMs": 480
+    },
+    {
+      "title": "Avoid excessive DOM size",
+      "description": "A large DOM will increase memory usage, cause longer style calculations, and produce costly layout reflows.",
+      "savingsMs": 310
+    },
+    {
+      "title": "Preconnect to required origins",
+      "description": "Consider adding preconnect or dns-prefetch resource hints to establish early connections to important third-party origins.",
+      "savingsMs": 280
+    }
+  ],
+  "fieldData": {
+    "LARGEST_CONTENTFUL_PAINT_MS": {
+      "percentile": 4500,
+      "category": "SLOW"
+    },
+    "CUMULATIVE_LAYOUT_SHIFT_SCORE": {
+      "percentile": 15,
+      "category": "NEEDS_IMPROVEMENT"
+    },
+    "FIRST_CONTENTFUL_PAINT_MS": {
+      "percentile": 2300,
+      "category": "NEEDS_IMPROVEMENT"
+    }
+  },
+  "_desktop": {
+    "scores": {
+      "performance": 68,
+      "seo": 85,
+      "accessibility": 76,
+      "bestPractices": 92
+    },
+    "coreWebVitals": {
+      "lcp": 2180,
+      "cls": 0.08,
+      "fcp": 1200,
+      "inp": 145,
+      "ttfb": 620
+    }
+  },
+  "_note": "This is pre-baked fallback data for when PAGESPEED_API_KEY is not set. Replace with live data by running the orchestrator with a valid API key."
+}

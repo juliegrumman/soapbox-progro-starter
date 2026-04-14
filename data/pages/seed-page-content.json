@@ -1,0 +1,31 @@
+{
+  "url": "https://www.soapboxsoaps.com/pages/progro-density-plus-hair-serum",
+  "title": "ProGRO Density+ Hair Serum | Soapbox",
+  "metaDescription": "ProGRO Density+ is a clinically-tested hair density serum that promotes thicker, fuller-looking hair. Made with clean, science-backed ingredients.",
+  "ogTitle": "ProGRO Density+ Hair Serum",
+  "ogDescription": "Clinically-tested hair density serum for thicker, fuller-looking hair.",
+  "headings": [
+    { "level": 1, "text": "ProGRO Density+ Hair Serum" },
+    { "level": 2, "text": "Thicker, Fuller Hair Starts Here" },
+    { "level": 2, "text": "Key Ingredients" },
+    { "level": 3, "text": "Redensyl" },
+    { "level": 3, "text": "Baicapil" },
+    { "level": 3, "text": "Caffeine" },
+    { "level": 2, "text": "How to Use" },
+    { "level": 2, "text": "Clinical Results" },
+    { "level": 2, "text": "Customer Reviews" },
+    { "level": 2, "text": "FAQ" }
+  ],
+  "bodyTextPreview": "ProGRO Density+ Hair Serum Thicker Fuller Hair Starts Here Clinically tested to promote hair density and reduce shedding in as little as 8 weeks ProGRO Density combines the power of Redensyl Baicapil and Caffeine to target hair thinning at the root Our clean science-backed formula is designed for all hair types and works at the follicular level to promote stronger healthier hair growth Key Ingredients Redensyl A breakthrough molecule that reactivates hair follicle stem cells promoting new hair growth and increasing hair density Baicapil A plant-based complex of soy and wheat sprout extracts that helps anchor hair and reduce shedding Caffeine Stimulates scalp circulation and extends the growth phase of hair follicles How to Use Apply 1-2 droppers directly to the scalp focusing on areas of concern Massage gently for 1-2 minutes Use daily preferably at night for best results No need to rinse out Clinical Results 89 percent of users saw visible improvement in hair density 73 percent reported reduced shedding 95 percent noticed stronger feeling hair Results based on 12-week clinical trial FAQ How long until I see results Most users notice reduced shedding within 4-6 weeks and visible density improvement by 8-12 weeks Is it safe for color treated hair Yes ProGRO Density is safe for all hair types including color treated and chemically processed hair",
+  "imageAltTexts": [
+    "ProGRO Density+ Hair Serum bottle",
+    "Before and after hair density comparison",
+    "Redensyl molecule illustration",
+    "Woman applying serum to scalp",
+    "Clinical trial results chart"
+  ],
+  "structuredData": [
+    "{\"@context\":\"https://schema.org\",\"@type\":\"Product\",\"name\":\"ProGRO Density+ Hair Serum\",\"brand\":{\"@type\":\"Brand\",\"name\":\"Soapbox\"},\"description\":\"Clinically-tested hair density serum\",\"offers\":{\"@type\":\"Offer\",\"price\":\"39.99\",\"priceCurrency\":\"USD\",\"availability\":\"https://schema.org/InStock\"}}"
+  ],
+  "_note": "This is pre-baked fallback data for when the page fetch fails. Replace with live data by running the orchestrator with network access."
+}

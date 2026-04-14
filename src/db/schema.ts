@@ -54,12 +54,31 @@ export const redditThreads = sqliteTable("reddit_threads", {
 export const pagePerformance = sqliteTable("page_performance", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   url: text("url").notNull(),
+  // Core Web Vitals (from PageSpeed Insights)
   performanceScore: real("performance_score"),
-  lcp: real("lcp"),
-  cls: real("cls"),
   seoScore: real("seo_score"),
+  accessibilityScore: real("accessibility_score"),
+  bestPracticesScore: real("best_practices_score"),
+  lcp: real("lcp"), // Largest Contentful Paint (ms)
+  cls: real("cls"), // Cumulative Layout Shift
+  fcp: real("fcp"), // First Contentful Paint (ms)
+  inp: real("inp"), // Interaction to Next Paint (ms)
+  ttfb: real("ttfb"), // Time to First Byte (ms)
+  // Messaging alignment (from page scrape + Sessions 1-3 cross-reference)
   messagingAlignmentScore: real("messaging_alignment_score"),
+  keywordsFound: text("keywords_found"), // JSON array
+  keywordsMissing: text("keywords_missing"), // JSON array
+  messagingGaps: text("messaging_gaps"), // JSON array
+  // Microsoft Clarity UX metrics
+  scrollDepth: real("scroll_depth"), // Avg scroll depth %
+  engagementTime: real("engagement_time"), // Avg engagement (seconds)
+  rageClicks: integer("rage_clicks"),
+  deadClicks: integer("dead_clicks"),
+  quickBacks: integer("quick_backs"),
+  clarityMetrics: text("clarity_metrics"), // JSON overflow for additional data
+  // Synthesis
   recommendations: text("recommendations"), // JSON array
+  quickWins: text("quick_wins"), // JSON array (top 10)
   auditedAt: text("audited_at"),
 });
 

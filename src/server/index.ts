@@ -6,7 +6,7 @@
 import express from "express";
 import { db } from "../db/index.js";
 import { competitiveReviews, keywordRankings, redditThreads, pagePerformance, metaAds } from "../db/schema.js";
-import { sql } from "drizzle-orm";
+import { sql, desc } from "drizzle-orm";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -78,6 +78,85 @@ app.get("/api/reddit", async (_req, res) => {
 app.get("/api/pages", async (_req, res) => {
   const result = db.select().from(pagePerformance).all();
   res.json(result);
+});
+
+// Latest page audit per URL
+app.get("/api/pages/latest", async (_req, res) => {
+  const result = db
+    .select()
+    .from(pagePerformance)
+    .orderBy(desc(pagePerformance.auditedAt))
+    .limit(1)
+    .all();
+  res.json(result[0] ?? null);
+});
+
+// Core Web Vitals with pass/fail status
+app.get("/api/pages/vitals", async (_req, res) => {
+  const result = db
+    .select({
+      url: pagePerformance.url,
+      performanceScore: pagePerformance.performanceScore,
+      lcp: pagePerformance.lcp,
+      cls: pagePerformance.cls,
+      fcp: pagePerformance.fcp,
+      inp: pagePerformance.inp,
+      ttfb: pagePerformance.ttfb,
+      lcpStatus: sql<string>`CASE WHEN ${pagePerformance.lcp} < 2500 THEN 'GOOD' WHEN ${pagePerformance.lcp} < 4000 THEN 'NEEDS IMPROVEMENT' ELSE 'POOR' END`,
+      clsStatus: sql<string>`CASE WHEN ${pagePerformance.cls} < 0.1 THEN 'GOOD' WHEN ${pagePerformance.cls} < 0.25 THEN 'NEEDS IMPROVEMENT' ELSE 'POOR' END`,
+      fcpStatus: sql<string>`CASE WHEN ${pagePerformance.fcp} < 1800 THEN 'GOOD' WHEN ${pagePerformance.fcp} < 3000 THEN 'NEEDS IMPROVEMENT' ELSE 'POOR' END`,
+      auditedAt: pagePerformance.auditedAt,
+    })
+    .from(pagePerformance)
+    .orderBy(desc(pagePerformance.auditedAt))
+    .limit(1)
+    .all();
+  res.json(result[0] ?? null);
+});
+
+// Clarity behavioral metrics
+app.get("/api/pages/clarity", async (_req, res) => {
+  const result = db
+    .select({
+      url: pagePerformance.url,
+      scrollDepth: pagePerformance.scrollDepth,
+      engagementTime: pagePerformance.engagementTime,
+      rageClicks: pagePerformance.rageClicks,
+      deadClicks: pagePerformance.deadClicks,
+      quickBacks: pagePerformance.quickBacks,
+      clarityMetrics: pagePerformance.clarityMetrics,
+      auditedAt: pagePerformance.auditedAt,
+    })
+    .from(pagePerformance)
+    .orderBy(desc(pagePerformance.auditedAt))
+    .limit(1)
+    .all();
+  res.json(result[0] ?? null);
+});
+
+// Top 10 quick wins from latest audit
+app.get("/api/pages/quick-wins", async (_req, res) => {
+  const result = db
+    .select({
+      url: pagePerformance.url,
+      quickWins: pagePerformance.quickWins,
+      recommendations: pagePerformance.recommendations,
+      auditedAt: pagePerformance.auditedAt,
+    })
+    .from(pagePerformance)
+    .orderBy(desc(pagePerformance.auditedAt))
+    .limit(1)
+    .all();
+
+  if (result.length === 0) return res.json(null);
+
+  const row = result[0];
+  res.json({
+    url: row.url,
+    quickWins: row.quickWins ? JSON.parse(row.quickWins) : [],
+    recommendations: row.recommendations ? JSON.parse(row.recommendations) : [],
+    auditedAt: row.auditedAt,
+  });
 });
 
 // Meta ads (Session 5+)

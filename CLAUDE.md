@@ -16,10 +16,14 @@ soapbox-progro/
 │   │   ├── schema.ts       # Drizzle schema (all 5 tables)
 │   │   ├── index.ts         # DB connection singleton
 │   │   ├── seed.ts          # CSV → SQLite importer (reviews)
-│   │   └── seed-keywords.ts # CSV → SQLite importer (keywords)
+│   │   ├── seed-keywords.ts # CSV → SQLite importer (keywords)
+│   │   └── seed-pages.ts    # CSV → SQLite importer (page audits)
 │   ├── tools/
 │   │   ├── reviews.ts       # Query + save competitive reviews
-│   │   └── keywords.ts      # Query + save keyword rankings
+│   │   ├── keywords.ts      # Query + save keyword rankings
+│   │   └── pages.ts         # Query + save page audit results
+│   ├── agents/
+│   │   └── page-audit-orchestrator.ts  # Multi-agent orchestrator (Session 4)
 │   └── server/
 │       └── index.ts         # Express API for dashboard
 ├── scripts/                  # Python scrapers
@@ -31,7 +35,8 @@ soapbox-progro/
 ├── skill-templates/          # Skill blueprints (copy to skills/ to activate)
 ├── data/
 │   ├── reviews/              # Normalized review CSV files
-│   └── keywords/             # Keyword ranking CSV fallback data
+│   ├── keywords/             # Keyword ranking CSV fallback data
+│   └── pages/                # Page audit fallback data (PageSpeed, Clarity, page content)
 ├── reports/                  # Generated analysis reports
 └── soapbox.db                # SQLite database
 ```
@@ -75,16 +80,33 @@ ORDER BY search_volume DESC;
 SELECT keyword, position, url, search_volume
 FROM keyword_rankings WHERE position <= 10
 ORDER BY search_volume DESC;
+
+-- Session 4: Latest page audit scores
+SELECT url, performance_score, seo_score, messaging_alignment_score,
+       scroll_depth, rage_clicks, audited_at
+FROM page_performance ORDER BY audited_at DESC LIMIT 1;
+
+-- Session 4: Core Web Vitals pass/fail
+SELECT url, lcp, cls, fcp, inp, ttfb,
+  CASE WHEN lcp < 2500 THEN 'GOOD' WHEN lcp < 4000 THEN 'NEEDS WORK' ELSE 'POOR' END as lcp_status,
+  CASE WHEN cls < 0.1 THEN 'GOOD' WHEN cls < 0.25 THEN 'NEEDS WORK' ELSE 'POOR' END as cls_status
+FROM page_performance ORDER BY audited_at DESC LIMIT 1;
+
+-- Session 4: Quick wins from latest audit
+SELECT quick_wins FROM page_performance ORDER BY audited_at DESC LIMIT 1;
 ```
 
 ## Available Skills
 - **competitive-review-collection** (`skills/skill-competitive-review-collection.md`) — Orchestrates scraping and normalizing competitor reviews
 - **competitive-intelligence-analysis** (`skills/skill-competitive-intelligence-analysis.md`) — Analyzes review data to produce competitive intelligence report
 - **seo-keyword-research** (`skills/skill-seo-keyword-research.md`) — Extracts keywords from customer language, checks Google rankings via SerpAPI, clusters by intent, produces keyword strategy report
+- **page-performance-audit** (`skill-templates/skill-page-performance-audit.md`) — TypeScript orchestrator that coordinates three sub-agents (technical performance, SEO+messaging alignment, conversion/UX) to audit the ProGRO product page. Uses `@anthropic-ai/sdk` for real multi-agent coordination. Run with `npm run audit:page`.
 
 ## Available Tools (TypeScript)
 - `src/tools/reviews.ts` — Functions: `getReviews()`, `getReviewCountsByCompetitor()`, `getRatingDistribution()`, `getReviewsByRating()`, `searchReviews()`, `updateReviewEnrichment()`, `insertReview()`
 - `src/tools/keywords.ts` — Functions: `getKeywords()`, `getKeywordsByCluster()`, `getKeywordsByIntent()`, `getKeywordsByPositionRange()`, `searchKeywords()`, `upsertKeyword()`, `insertKeywordBatch()`
+- `src/tools/pages.ts` — Functions: `getPageAudits()`, `getLatestAudit()`, `getAuditSummary()`, `getCoreWebVitals()`, `getClarityMetrics()`, `getMessagingAlignment()`, `insertPageAudit()`, `searchRecommendations()`
+- `src/agents/page-audit-orchestrator.ts` — Multi-agent orchestrator using `@anthropic-ai/sdk`. Dispatches 3 sub-agents in parallel, synthesizes results, saves to DB, generates report.
 
 ## Available API Clients (TypeScript)
 - `src/clients/config.ts` — Centralized env loading via `dotenv`. Functions: `getSerpApiKey()`, `getPageSpeedApiKey()`
@@ -95,14 +117,17 @@ ORDER BY search_volume DESC;
 ```bash
 npm run seed          # Re-import review CSVs into SQLite
 npm run seed:keywords # Import fallback keyword data into SQLite
+npm run seed:pages    # Import fallback page audit data into SQLite
 npm run db:push       # Push schema changes to SQLite
 npm run dev           # Start Express API server (port 3001)
+npm run audit:page    # Run the Session 4 page audit orchestrator
 ```
 
 ## Tech Stack
 - **Runtime:** Node.js + TypeScript (ESM)
 - **Database:** SQLite via better-sqlite3 + Drizzle ORM
 - **API:** Express (serves JSON to dashboard)
+- **AI SDK:** @anthropic-ai/sdk (Session 4 orchestrator sub-agents)
 - **Scrapers:** Python (existing, invoked via scripts/)
 - **Dashboard:** Vite + React (Session 5, in `dashboard/`)
 
@@ -121,4 +146,7 @@ Agents share context through the SQLite database, not direct communication:
 - All scrapers output the normalized CSV schema defined in `scrape_okendo.py`
 - SerpAPI free tier allows 100 searches/month. The keyword research skill budgets ~45 searches per run (30 search + 15 trends).
 - If no `SERPAPI_KEY` is set in `.env`, the keyword skill falls back to pre-baked data in `data/keywords/`
+- If no `PAGESPEED_API_KEY` is set, the page audit orchestrator falls back to data in `data/pages/seed-pagespeed-results.json`
+- If no `CLARITY_API_TOKEN`/`CLARITY_PROJECT_ID` is set, the orchestrator falls back to `data/pages/seed-clarity-data.json`
+- `ANTHROPIC_API_KEY` is required for the page audit orchestrator (it powers the sub-agent API calls)
 - ProGRO Density+ product page: `https://www.soapboxsoaps.com/pages/progro-density-plus-hair-serum`
