@@ -82,6 +82,32 @@ export const pagePerformance = sqliteTable("page_performance", {
   auditedAt: text("audited_at"),
 });
 
+// Session 4: Clarity UX Events (element-level friction data)
+export const clarityEvents = sqliteTable("clarity_events", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  url: text("url").notNull(),
+  eventType: text("event_type").notNull(), // "rage_click", "dead_click", "quick_back"
+  selector: text("selector"), // CSS selector of the element
+  count: integer("count"), // how many times this event occurred
+  context: text("context"), // what it likely means
+  severity: text("severity"), // "high", "medium", "low"
+  suggestedFix: text("suggested_fix"), // agent-generated recommendation
+  status: text("status").default("open"), // "open", "fixed", "wont_fix"
+  auditedAt: text("audited_at"),
+});
+
+// Session 4: Clarity Traffic Sources (per-source behavioral metrics)
+export const claritySources = sqliteTable("clarity_sources", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  url: text("url").notNull(),
+  source: text("source").notNull(), // "Meta Ads", "Google Organic", "TikTok", "Direct"
+  sessions: integer("sessions"),
+  scrollDepth: real("scroll_depth"),
+  engagementTime: real("engagement_time"),
+  bounceRate: real("bounce_rate"),
+  auditedAt: text("audited_at"),
+});
+
 // Session 5: Meta Ads Performance
 export const metaAds = sqliteTable("meta_ads", {
   id: integer("id").primaryKey({ autoIncrement: true }),

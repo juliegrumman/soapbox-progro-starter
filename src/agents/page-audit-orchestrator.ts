@@ -20,7 +20,7 @@ import "dotenv/config";
 import Anthropic from "@anthropic-ai/sdk";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { resolve } from "path";
-import { insertPageAudit } from "../tools/pages.js";
+import { insertPageAudit, insertEventBatch, insertSourceBatch } from "../tools/pages.js";
 import { getKeywords } from "../tools/keywords.js";
 import { searchReviews } from "../tools/reviews.js";
 import { searchThreads } from "../tools/reddit.js";
@@ -504,9 +504,10 @@ function buildCroUxAgent(): SubAgentConfig {
     system: `You are a conversion rate optimization specialist for an ecommerce product page (hair density serum).
 
 Your job is to analyze real user behavior data from Microsoft Clarity to identify:
-- UX friction points (rage clicks, dead clicks)
+- UX friction points (rage clicks, dead clicks) at the ELEMENT level
 - Engagement patterns (scroll depth, time on page)
 - Conversion barriers (quick-backs, low engagement sections)
+- Traffic source quality (which sources have worst engagement)
 
 Interpret the data for actionable conversion insights:
 - If scroll depth < 50%, key content below the fold isn't being seen
@@ -514,11 +515,22 @@ Interpret the data for actionable conversion insights:
 - If dead clicks are high, users expect interactivity that isn't there
 - If quick-backs are high, the page may not match search intent or ad promise
 - Low engagement time + high scroll = scanning without reading
+- If a traffic source has much lower scroll depth, the ad/link is setting wrong expectations
 
 Return your findings as a structured JSON object with:
-1. "metrics" — raw Clarity numbers (scroll depth, engagement time, rage clicks, dead clicks, quick-backs)
-2. "interpretation" — what each metric means for this page
-3. "frictionPoints" — specific UX issues identified
+1. "metrics" — raw aggregate numbers (scroll depth, engagement time, total rage clicks, dead clicks, quick-backs)
+2. "events" — array of element-level friction events, each with:
+   - "eventType": "rage_click" | "dead_click"
+   - "selector": CSS selector of the element (e.g. ".ingredient-card img")
+   - "count": number of occurrences
+   - "context": what this likely means for the user
+   - "severity": "high" (100+ occurrences), "medium" (25-99), or "low" (under 25)
+   - "suggestedFix": specific, actionable fix recommendation
+3. "trafficSources" — array of per-source metrics, each with:
+   - "source": traffic source name
+   - "sessions": session count
+   - "scrollDepth": average scroll depth for this source
+   - "engagementTime": average engagement time for this source
 4. "topRecommendations" — 5 most impactful conversion improvements
 5. "summary" — 2-3 sentence overview of UX health`,
     tools: [
@@ -543,7 +555,11 @@ Return your findings as a structured JSON object with:
     },
     task: `Analyze user behavior on this product page: ${TARGET_URL}
 
-Query the Clarity dashboard for all available metrics. Interpret the data from a conversion optimization perspective. Identify the top friction points and opportunities.
+Query the Clarity dashboard for all available metrics. Interpret the data from a conversion optimization perspective.
+
+IMPORTANT: Return element-level data for every rage click and dead click event. Each event must include the CSS selector of the element, the occurrence count, what the behavior means, a severity rating, and a specific fix recommendation.
+
+Also return per-traffic-source metrics so we can identify which sources have the worst engagement.
 
 Return your complete analysis as a JSON object.`,
   };
@@ -588,12 +604,16 @@ Also output a JSON block at the very end (fenced with \`\`\`json) containing the
   "messagingGaps": string[] (themes/topics missing from page),
   "scrollDepth": number (percentage) or null,
   "engagementTime": number (seconds) or null,
-  "rageClicks": number or null,
-  "deadClicks": number or null,
+  "rageClicks": number (total) or null,
+  "deadClicks": number (total) or null,
   "quickBacks": number or null,
   "recommendations": string[] (all recommendations),
-  "quickWins": string[] (top 10 quick wins)
-}`,
+  "quickWins": string[] (top 10 quick wins),
+  "events": [{ "eventType": string, "selector": string, "count": number, "context": string, "severity": string, "suggestedFix": string }],
+  "trafficSources": [{ "source": string, "sessions": number, "scrollDepth": number, "engagementTime": number }]
+}
+
+IMPORTANT: The "events" array must include EVERY element-level rage click and dead click from the Conversion/UX data. Each event needs a specific CSS selector, count, and a concrete suggested fix. The "trafficSources" array must include per-source engagement metrics.`,
     messages: [
       {
         role: "user",
@@ -630,6 +650,7 @@ async function saveResults(synthesisResult: string): Promise<void> {
     try {
       const data = JSON.parse(jsonMatch[1]);
 
+      // Save aggregate audit to page_performance
       await insertPageAudit({
         url: TARGET_URL,
         performanceScore: data.performanceScore,
@@ -653,8 +674,37 @@ async function saveResults(synthesisResult: string): Promise<void> {
         recommendations: JSON.stringify(data.recommendations),
         quickWins: JSON.stringify(data.quickWins),
       });
-
       console.log("   💾 Saved to page_performance table");
+
+      // Save element-level UX events to clarity_events
+      if (Array.isArray(data.events) && data.events.length > 0) {
+        await insertEventBatch(
+          data.events.map((e: Record<string, unknown>) => ({
+            url: TARGET_URL,
+            eventType: e.eventType as string,
+            selector: e.selector as string,
+            count: e.count as number,
+            context: e.context as string,
+            severity: e.severity as string,
+            suggestedFix: e.suggestedFix as string,
+          }))
+        );
+        console.log(`   💾 Saved ${data.events.length} UX events to clarity_events table`);
+      }
+
+      // Save traffic source breakdown to clarity_sources
+      if (Array.isArray(data.trafficSources) && data.trafficSources.length > 0) {
+        await insertSourceBatch(
+          data.trafficSources.map((s: Record<string, unknown>) => ({
+            url: TARGET_URL,
+            source: s.source as string,
+            sessions: s.sessions as number,
+            scrollDepth: s.scrollDepth as number,
+            engagementTime: s.engagementTime as number,
+          }))
+        );
+        console.log(`   💾 Saved ${data.trafficSources.length} traffic sources to clarity_sources table`);
+      }
     } catch (err) {
       console.error("   ⚠️  Could not parse JSON from synthesis:", err);
     }

@@ -4,8 +4,8 @@
  */
 
 import { db } from "../db/index.js";
-import { pagePerformance } from "../db/schema.js";
-import { eq, sql, desc, like } from "drizzle-orm";
+import { pagePerformance, clarityEvents, claritySources } from "../db/schema.js";
+import { eq, sql, desc, like, and } from "drizzle-orm";
 
 /** Get all page audits, optionally filtered by URL */
 export function getPageAudits(opts?: { url?: string; limit?: number }) {
@@ -152,4 +152,139 @@ export function searchRecommendations(keyword: string) {
       sql`(${pagePerformance.recommendations} LIKE ${pattern} OR ${pagePerformance.quickWins} LIKE ${pattern})`
     )
     .orderBy(desc(pagePerformance.auditedAt));
+}
+
+// ─── Clarity Events ──────────────────────────────────────────────────────────
+
+/** Get UX friction events, optionally filtered by type, severity, or status */
+export function getEvents(opts?: {
+  url?: string;
+  eventType?: string;
+  severity?: string;
+  status?: string;
+  limit?: number;
+}) {
+  const conditions = [];
+  if (opts?.url) conditions.push(eq(clarityEvents.url, opts.url));
+  if (opts?.eventType) conditions.push(eq(clarityEvents.eventType, opts.eventType));
+  if (opts?.severity) conditions.push(eq(clarityEvents.severity, opts.severity));
+  if (opts?.status) conditions.push(eq(clarityEvents.status, opts.status));
+
+  let query = db
+    .select()
+    .from(clarityEvents)
+    .orderBy(desc(clarityEvents.count))
+    .$dynamic();
+
+  if (conditions.length > 0) {
+    query = query.where(and(...conditions));
+  }
+  if (opts?.limit) {
+    query = query.limit(opts.limit);
+  }
+
+  return query;
+}
+
+/** Get open high-severity events — the top priority fixes */
+export function getTopFrictionPoints(url: string) {
+  return db
+    .select()
+    .from(clarityEvents)
+    .where(
+      and(
+        eq(clarityEvents.url, url),
+        eq(clarityEvents.status, "open"),
+        eq(clarityEvents.severity, "high")
+      )
+    )
+    .orderBy(desc(clarityEvents.count));
+}
+
+/** Get event counts grouped by type and severity */
+export function getEventSummary(url: string) {
+  return db
+    .select({
+      eventType: clarityEvents.eventType,
+      severity: clarityEvents.severity,
+      count: sql<number>`COUNT(*)`,
+      totalOccurrences: sql<number>`SUM(${clarityEvents.count})`,
+    })
+    .from(clarityEvents)
+    .where(eq(clarityEvents.url, url))
+    .groupBy(clarityEvents.eventType, clarityEvents.severity);
+}
+
+/** Insert a batch of clarity events */
+export function insertEventBatch(
+  events: Array<{
+    url: string;
+    eventType: string;
+    selector?: string;
+    count?: number;
+    context?: string;
+    severity?: string;
+    suggestedFix?: string;
+    status?: string;
+  }>
+) {
+  const rows = events.map((e) => ({
+    ...e,
+    status: e.status ?? "open",
+    auditedAt: new Date().toISOString(),
+  }));
+
+  return db.insert(clarityEvents).values(rows);
+}
+
+/** Update event status (e.g., mark as fixed after implementing a recommendation) */
+export function updateEventStatus(eventId: number, status: string) {
+  return db
+    .update(clarityEvents)
+    .set({ status })
+    .where(eq(clarityEvents.id, eventId));
+}
+
+// ─── Clarity Traffic Sources ─────────────────────────────────────────────────
+
+/** Get traffic source breakdown for a URL */
+export function getTrafficSources(url: string) {
+  return db
+    .select()
+    .from(claritySources)
+    .where(eq(claritySources.url, url))
+    .orderBy(desc(claritySources.sessions));
+}
+
+/** Get sources with low scroll depth — likely traffic/landing page mismatch */
+export function getLowEngagementSources(url: string, maxScrollDepth = 40) {
+  return db
+    .select()
+    .from(claritySources)
+    .where(
+      and(
+        eq(claritySources.url, url),
+        sql`${claritySources.scrollDepth} < ${maxScrollDepth}`
+      )
+    )
+    .orderBy(claritySources.scrollDepth);
+}
+
+/** Insert a batch of traffic source records */
+export function insertSourceBatch(
+  sources: Array<{
+    url: string;
+    source: string;
+    sessions?: number;
+    scrollDepth?: number;
+    engagementTime?: number;
+    bounceRate?: number;
+  }>
+) {
+  const rows = sources.map((s) => ({
+    ...s,
+    auditedAt: new Date().toISOString(),
+  }));
+
+  return db.insert(claritySources).values(rows);
 }
