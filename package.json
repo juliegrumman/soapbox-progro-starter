@@ -10,7 +10,10 @@
     "seed:pages": "tsx src/db/seed-pages.ts",
     "db:push": "drizzle-kit push",
     "dev": "tsx src/server/index.ts",
-    "audit:page": "tsx src/agents/page-audit-orchestrator.ts"
+    "audit:page": "tsx src/agents/page-audit-orchestrator.ts",
+    "agent:perf": "tsx src/agents/perf-agent.ts",
+    "agent:seo": "tsx src/agents/seo-messaging-agent.ts",
+    "agent:cro": "tsx src/agents/cro-ux-agent.ts"
   },
   "keywords": [],
   "license": "UNLICENSED",
