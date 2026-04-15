@@ -1,61 +1,106 @@
 {
   "url": "https://www.soapboxsoaps.com/pages/progro-density-plus-hair-serum",
-  "dateRange": "2026-03-15 to 2026-04-14",
+  "dateRange": "2026-03-06 to 2026-04-14",
+  "source": "Microsoft Clarity dashboard CSV export (2026-04-14)",
   "metrics": {
-    "totalSessions": 14820,
-    "totalPageviews": 18340,
+    "totalSessions": 9641,
+    "botSessions": 663,
+    "uniqueUsers": 6004,
+    "pagesPerSession": 1.4,
+    "newUserSessions": 5295,
+    "returningUserSessions": 4348,
     "scrollDepth": {
-      "average": 43.2,
-      "p25": 22,
-      "p50": 41,
-      "p75": 68,
-      "p90": 88,
-      "note": "43% average means most users never see the FAQ or reviews section below the fold"
+      "average": 20.76,
+      "note": "20.76% average — most visitors barely scroll past the hero section"
     },
     "engagementTime": {
-      "average": 52.8,
-      "p25": 12,
-      "p50": 38,
-      "p75": 82,
-      "p90": 145,
-      "unit": "seconds"
+      "activeTime": 33,
+      "totalTime": 140,
+      "unit": "seconds",
+      "note": "33s active out of 140s total — 107s idle time suggests users open in background or lose interest"
     },
     "rageClicks": {
-      "total": 847,
-      "ratePerSession": 5.7,
-      "topElements": [
-        { "selector": ".ingredient-card img", "count": 234, "note": "Users clicking ingredient images expecting zoom or modal" },
-        { "selector": ".before-after-slider", "count": 189, "note": "Before/after images not responding as expected" },
-        { "selector": ".review-stars", "count": 142, "note": "Star rating not linking to reviews section" },
-        { "selector": ".price-area .compare-text", "count": 98, "note": "Comparison text looks clickable but is static" }
-      ]
+      "total": 6,
+      "ratePerSession": 0.06,
+      "percentOfSessions": "0.06%",
+      "note": "Very low — rage clicks are not a significant problem on this page"
     },
     "deadClicks": {
-      "total": 1263,
-      "ratePerSession": 8.5,
-      "topElements": [
-        { "selector": ".hero-banner h2", "count": 312, "note": "Hero headline getting clicks — users may expect it to anchor" },
-        { "selector": ".clinical-results-text", "count": 245, "note": "Clinical results percentages look interactive" },
-        { "selector": ".ingredient-name", "count": 198, "note": "Ingredient names look like links but are plain text" },
-        { "selector": ".faq-question", "count": 156, "note": "FAQ questions not expanding on click in some browsers" }
-      ]
+      "total": 414,
+      "percentOfSessions": "4.29%",
+      "note": "4.3% of sessions have dead clicks — users clicking on non-interactive elements. Element-level data not available from CSV export."
     },
     "quickBacks": {
-      "total": 2134,
-      "ratePerSession": 14.4,
-      "note": "14.4% quick-back rate is above average — some traffic source mismatch or slow initial load"
+      "total": 27,
+      "percentOfSessions": "0.28%",
+      "note": "Low quick-back rate — users who land aren't immediately bouncing"
     },
-    "deviceBreakdown": {
-      "mobile": 68.3,
-      "desktop": 26.1,
-      "tablet": 5.6
+    "excessiveScrolling": {
+      "total": 0,
+      "note": "Zero excessive scrolling sessions — unsurprising given 20% avg scroll depth"
     },
-    "topTrafficSources": [
-      { "source": "Meta Ads", "sessions": 6240, "scrollDepth": 38.1, "engagementTime": 41.2 },
-      { "source": "Google Organic", "sessions": 4120, "scrollDepth": 52.6, "engagementTime": 68.4 },
-      { "source": "Direct", "sessions": 2340, "scrollDepth": 48.9, "engagementTime": 72.1 },
-      { "source": "TikTok", "sessions": 1280, "scrollDepth": 31.4, "engagementTime": 28.6 }
-    ]
-  },
-  "_note": "This is pre-baked fallback data for when CLARITY_API_TOKEN is not set. Replace with live data by running the orchestrator with valid Clarity credentials."
+    "smartEvents": {
+      "submitForm": { "sessions": 173, "rate": "1.79%" },
+      "addToCart": { "sessions": 103, "rate": "1.07%" },
+      "beginCheckout": { "sessions": 50, "rate": "0.52%" },
+      "showMore": { "sessions": 24, "rate": "0.25%" },
+      "play": { "sessions": 20, "rate": "0.21%" },
+      "subscribe": { "sessions": 5, "rate": "0.05%" }
+    },
+    "conversionFunnel": {
+      "note": "9,641 sessions → 103 add to cart (1.07%) → 50 begin checkout (0.52%) → heavy drop-off at every stage"
+    },
+    "browsers": {
+      "ChromeMobile": { "sessions": 4282, "percent": "44.41%" },
+      "FacebookApp": { "sessions": 2744, "percent": "28.46%" },
+      "MobileSafari": { "sessions": 1054, "percent": "10.93%" },
+      "InstagramApp": { "sessions": 804, "percent": "8.34%" },
+      "Chrome": { "sessions": 524, "percent": "5.44%" },
+      "note": "93% mobile, 36% literally inside social media in-app browsers (FacebookApp + InstagramApp)"
+    },
+    "topReferrers": [
+      { "source": "l.facebook.com", "sessions": 4440 },
+      { "source": "m.facebook.com", "sessions": 2701 },
+      { "source": "www.soapboxsoaps.com", "sessions": 746 },
+      { "source": "instagram.com", "sessions": 548 },
+      { "source": "www.google.com", "sessions": 77 },
+      { "source": "www.tiktok.com", "sessions": 47 },
+      { "source": "l.instagram.com", "sessions": 35 },
+      { "source": "dashboard.replo.app", "sessions": 18 },
+      { "source": "www.klaviyo.com", "sessions": 17 }
+    ],
+    "campaigns": [
+      { "name": "SCC | ProGRO Soft Launch Campaign", "sessions": 222 },
+      { "name": "UG | AAA | UGC Test | Sales | Adv Campaign", "sessions": 3 },
+      { "name": "UG | AAA | UGC Test | Sales | Adv+ Campaign", "sessions": 3 }
+    ],
+    "jsErrors": {
+      "totalErrors": 15949,
+      "topErrors": [
+        { "error": "script error.", "sessions": 12338, "percent": "77.36%", "note": "Cross-origin script errors — likely third-party scripts (analytics, chat widgets)" },
+        { "error": "can't find variable: _autofillcallbackhandler", "sessions": 3473, "percent": "21.78%", "note": "Mobile browser autofill — not actionable" },
+        { "error": "ResizeObserver loop completed with undelivered notifications.", "sessions": 30, "percent": "0.19%", "note": "Common browser quirk — not impactful" }
+      ]
+    },
+    "performance": {
+      "score": 77.12,
+      "lcp": "2.404s",
+      "inp": "288ms",
+      "cls": "0.027",
+      "note": "Real user metrics (RUM) from Clarity — LCP and CLS are GOOD, INP NEEDS IMPROVEMENT"
+    },
+    "topPages": [
+      { "url": "https://www.soapboxsoaps.com/pages/progro-density-plus-hair-serum", "sessions": 9372 },
+      { "url": "https://www.soapboxsoaps.com/pages/biotin-hair-care-bundle-3", "sessions": 270 },
+      { "url": "https://www.soapboxsoaps.com/pages/progro-density-plus-hair-serum-cw", "sessions": 25 }
+    ],
+    "botTraffic": {
+      "webScraper": 292,
+      "suspiciousDevice": 268,
+      "suspiciousNetwork": 548,
+      "suspiciousInteraction": 568,
+      "ppcAdFraud": 1,
+      "note": "663 total bot sessions (6.9%) — suspiciousInteraction is highest, could be click farm traffic from paid campaigns"
+    }
+  }
 }
