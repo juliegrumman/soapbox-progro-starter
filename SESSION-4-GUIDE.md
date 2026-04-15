@@ -21,6 +21,7 @@ By the end, you'll have built:
 - An Anthropic API key (this powers the sub-agents — your instructor will provide one for the session)
 - A Google PageSpeed Insights API key (free — get one at https://developers.google.com/speed/docs/insights/v5/get-started)
 - Microsoft Clarity API credentials (provided by the client)
+- A Meta Business Manager account with ad campaign access (for the Meta Ads MCP connection)
 
 ## Step 1: Open Your Project
 
@@ -450,9 +451,50 @@ Start the server with npm run dev and test these endpoints. Show me the response
 
 Expected: `/latest` returns the full audit record, `/vitals` returns CWV with pass/fail status strings, `/quick-wins` returns parsed JSON arrays.
 
-## Step 12: Connect the MCP Servers (bonus)
+## Step 12: Connect the Meta Ads MCP
 
-If you have time, connect the Clarity and Playwright MCP servers for interactive exploration. These let you ask ad-hoc questions that go beyond the structured audit.
+Now we're going to connect to Soapbox's live Meta Ads account. This uses the Pipeboard Meta Ads MCP — a remote MCP server that connects Claude to the Meta Ads API via OAuth.
+
+**Exit Claude Code first** (press `Ctrl+C` or type `/exit`).
+
+```
+claude mcp add meta-ads --transport sse https://mcp.pipeboard.co/meta-ads-mcp
+```
+
+This will open your browser for OAuth authentication. Follow the prompts to:
+1. Log in to Pipeboard (create an account if needed)
+2. Connect your Meta Business Manager account
+3. Authorize access to ad campaign data
+
+Once connected, re-enter Claude Code:
+
+```
+claude
+```
+
+**12a. Verify the connection:**
+
+```
+What MCP tools do you have access to now? List any Meta Ads tools and what each one does.
+```
+
+You should see tools like `get_ad_accounts`, `get_campaigns`, `get_insights`, `get_ads`, `get_ad_creatives`, and more. These give Claude direct access to your Meta Ads data.
+
+**12b. Explore what's available:**
+
+```
+Using the Meta Ads MCP, get all ad accounts I have access to. Then for each account, show me the active campaigns.
+```
+
+```
+For the Soapbox ad account, get performance insights for the last 30 days. Show me: campaign name, spend, impressions, clicks, CTR, CPC, and conversions.
+```
+
+**What just happened:** You just gave Claude real-time access to live Meta Ads data — the same way the Reddit MCP in Session 3 gave Claude access to Reddit. The difference: this one uses OAuth (you authenticated with your Meta account), while the Reddit MCP needed no auth. This is the progression: no auth (Reddit) → API key (PageSpeed) → OAuth (Meta Ads).
+
+## Step 12c: Connect Additional MCP Servers (bonus)
+
+If you have time, also connect the Clarity and Playwright MCP servers for interactive exploration:
 
 **Exit Claude Code first** (press `Ctrl+C` or type `/exit`).
 
@@ -461,31 +503,13 @@ claude mcp add clarity -- npx @microsoft/clarity-mcp-server --clarity_api_token=
 claude mcp add playwright -- npx @anthropic-ai/playwright-mcp --headless
 ```
 
-Re-enter Claude Code:
+Re-enter Claude Code and verify:
 
 ```
-claude
+What MCP tools do you have access to now? List all available tools from Meta Ads, Clarity, and Playwright.
 ```
 
-Verify the connection:
-
-```
-What MCP tools do you have access to now? List any Clarity and Playwright tools and what each one does.
-```
-
-You should see tools like `query-analytics-dashboard` and `list-session-recordings` from Clarity, and navigation/screenshot tools from Playwright.
-
-Now try interactive queries:
-
-```
-Using the Clarity MCP, what's the average scroll depth on the ProGRO product page over the last 30 days?
-```
-
-```
-Using Playwright, navigate to the ProGRO product page and show me the H1 heading, meta description, and the first 3 H2 headings. Do they match what our SEO agent found?
-```
-
-**What just happened:** You used two different ways to access the same data sources. The orchestrator calls the Clarity API and fetches page HTML directly from TypeScript code. The MCP servers let Claude Code do the same thing interactively. The orchestrator is for structured, repeatable audits. The MCPs are for ad-hoc investigation when you want to dig deeper into a specific finding.
+**What just happened:** You now have three MCP servers connected — Meta Ads (OAuth), Clarity (API token), and Playwright (no auth). Each extends Claude's capabilities in a different domain. The orchestrator calls APIs directly from TypeScript code; the MCPs let Claude use those same data sources interactively. Both patterns have their place.
 
 ## Step 13: The Architecture — Why Three Agents?
 
@@ -540,6 +564,9 @@ Common issues: invalid API key, API not enabled in Google Cloud Console, or the 
 
 **Clarity API fails**
 Check that both `CLARITY_API_TOKEN` and `CLARITY_PROJECT_ID` are set in `.env`. The token comes from Clarity project → Settings → Data Export → Generate new API token. Falls back to cached data automatically.
+
+**Meta Ads MCP won't connect**
+Make sure you ran `claude mcp add meta-ads --transport sse https://mcp.pipeboard.co/meta-ads-mcp` outside of Claude Code (exit first). If the OAuth flow fails in the browser, try again — Pipeboard's OAuth can be flaky on the first attempt. If you see "no ad accounts found," make sure your Meta Business Manager account has active ad campaigns.
 
 **"No such table: page_performance" or missing columns**
 Run `npm run db:push` to apply the schema changes from Step 6.
