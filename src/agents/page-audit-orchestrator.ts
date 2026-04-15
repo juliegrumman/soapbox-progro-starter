@@ -1,13 +1,17 @@
 /**
  * Page Audit Orchestrator
  *
- * Imports three standalone sub-agents and coordinates them:
- *   1. perf-agent        → Google PageSpeed Insights
- *   2. seo-messaging-agent → Page content + Sessions 1-3 cross-reference
- *   3. cro-ux-agent      → Microsoft Clarity behavioral data
+ * Coordinates three standalone sub-agents using the Claude Agent SDK's
+ * native subagent dispatch. The SDK handles the agentic loop, tool
+ * execution, and parallelization automatically.
  *
- * Each agent can also run independently (npm run agent:perf, agent:seo, agent:cro).
- * The orchestrator dispatches all three in parallel, synthesizes, and saves.
+ * Sub-agents:
+ *   1. perf-auditor   → Google PageSpeed Insights
+ *   2. seo-analyst    → Page content + Sessions 1-3 cross-reference
+ *   3. cro-analyst    → Microsoft Clarity behavioral data
+ *
+ * After synthesis, the orchestrator calls save_audit_results to persist
+ * structured data to the database (no JSON regex parsing needed).
  *
  * Usage:
  *   npx tsx src/agents/page-audit-orchestrator.ts
@@ -15,14 +19,20 @@
  */
 
 import "dotenv/config";
-import Anthropic from "@anthropic-ai/sdk";
+import { query } from "@anthropic-ai/claude-agent-sdk";
 import { writeFileSync } from "fs";
 import { resolve } from "path";
-import { runSubAgent } from "./run-sub-agent.js";
-import { buildPerfAgent } from "./perf-agent.js";
-import { buildSeoMessagingAgent } from "./seo-messaging-agent.js";
-import { buildCroUxAgent } from "./cro-ux-agent.js";
-import { insertPageAudit, insertEventBatch, insertSourceBatch } from "../tools/pages.js";
+
+// Import MCP servers from tool files
+import { pagespeedServer } from "./tools/pagespeed-tools.js";
+import { seoServer } from "./tools/seo-tools.js";
+import { clarityServer } from "./tools/clarity-tools.js";
+import { dbSaveServer } from "./tools/db-save-tools.js";
+
+// Import agent configs for system prompts
+import { perfAgentConfig } from "./perf-agent.js";
+import { seoAgentConfig } from "./seo-messaging-agent.js";
+import { croAgentConfig } from "./cro-ux-agent.js";
 
 // ─── Configuration ───────────────────────────────────────────────────────────
 
@@ -30,159 +40,7 @@ const TARGET_URL =
   process.env.AUDIT_URL ||
   "https://www.soapboxsoaps.com/pages/progro-density-plus-hair-serum";
 
-const MODEL = "claude-sonnet-4-6";
 const REPORTS_DIR = resolve(import.meta.dirname, "../../reports");
-
-const client = new Anthropic();
-
-// ─── Synthesis ───────────────────────────────────────────────────────────────
-
-async function synthesize(
-  perfResult: string,
-  seoResult: string,
-  croResult: string
-): Promise<string> {
-  console.log("\n🔄 Synthesizing results...");
-
-  const response = await client.messages.create({
-    model: MODEL,
-    max_tokens: 8192,
-    system: `You are the lead product page auditor for ProGRO Density+ hair serum by Soapbox. Three specialist agents have analyzed the product page. Your job is to synthesize their findings into a single, actionable audit report.
-
-Structure your response as a markdown report with these sections:
-1. **Executive Summary** — 3-4 bullet points covering the most important findings
-2. **Technical Performance** — Core Web Vitals status, key issues
-3. **SEO & Messaging Alignment** — Keyword coverage, messaging gaps, alignment score
-4. **Conversion & UX** — Clarity behavioral insights, friction points
-5. **Top 10 Quick Wins** — Prioritized list of actions sorted by estimated impact, each with: what to do, why it matters, estimated effort (low/medium/high)
-6. **Methodology** — Brief note on data sources
-
-Also output a JSON block at the very end (fenced with \`\`\`json) containing the structured data for database storage:
-{
-  "performanceScore": number (0-100),
-  "seoScore": number (0-100),
-  "accessibilityScore": number (0-100),
-  "bestPracticesScore": number (0-100),
-  "lcp": number (ms),
-  "cls": number,
-  "fcp": number (ms),
-  "inp": number (ms) or null,
-  "ttfb": number (ms),
-  "messagingAlignmentScore": number (0-100),
-  "keywordsFound": string[] (keywords found on page),
-  "keywordsMissing": string[] (high-value keywords missing),
-  "messagingGaps": string[] (themes/topics missing from page),
-  "scrollDepth": number (percentage) or null,
-  "engagementTime": number (seconds) or null,
-  "rageClicks": number (total) or null,
-  "deadClicks": number (total) or null,
-  "quickBacks": number or null,
-  "recommendations": string[] (all recommendations),
-  "quickWins": string[] (top 10 quick wins),
-  "events": [{ "eventType": string, "selector": string, "count": number, "context": string, "severity": string, "suggestedFix": string }],
-  "trafficSources": [{ "source": string, "sessions": number, "scrollDepth": number, "engagementTime": number }]
-}
-
-IMPORTANT: The "events" array must include EVERY element-level rage click and dead click from the Conversion/UX data. The "trafficSources" array must include per-source engagement metrics.`,
-    messages: [
-      {
-        role: "user",
-        content: `Here are the findings from three specialist agents who audited the ProGRO Density+ product page (${TARGET_URL}):
-
-## Technical Performance Agent Results
-${perfResult}
-
-## SEO + Messaging Alignment Agent Results
-${seoResult}
-
-## Conversion/UX Agent Results
-${croResult}
-
-Synthesize these into a unified audit report with a top-10 quick wins list. End with the JSON data block for database storage.`,
-      },
-    ],
-  });
-
-  const text = response.content
-    .filter((b): b is Anthropic.Messages.TextBlock => b.type === "text")
-    .map((b) => b.text)
-    .join("\n");
-
-  console.log("   ✅ Synthesis complete");
-  return text;
-}
-
-// ─── Save Results ────────────────────────────────────────────────────────────
-
-async function saveResults(synthesisResult: string): Promise<void> {
-  const jsonMatch = synthesisResult.match(/```json\s*([\s\S]*?)\s*```/);
-
-  if (jsonMatch) {
-    try {
-      const data = JSON.parse(jsonMatch[1]);
-
-      await insertPageAudit({
-        url: TARGET_URL,
-        performanceScore: data.performanceScore,
-        seoScore: data.seoScore,
-        accessibilityScore: data.accessibilityScore,
-        bestPracticesScore: data.bestPracticesScore,
-        lcp: data.lcp,
-        cls: data.cls,
-        fcp: data.fcp,
-        inp: data.inp,
-        ttfb: data.ttfb,
-        messagingAlignmentScore: data.messagingAlignmentScore,
-        keywordsFound: JSON.stringify(data.keywordsFound),
-        keywordsMissing: JSON.stringify(data.keywordsMissing),
-        messagingGaps: JSON.stringify(data.messagingGaps),
-        scrollDepth: data.scrollDepth,
-        engagementTime: data.engagementTime,
-        rageClicks: data.rageClicks,
-        deadClicks: data.deadClicks,
-        quickBacks: data.quickBacks,
-        recommendations: JSON.stringify(data.recommendations),
-        quickWins: JSON.stringify(data.quickWins),
-      });
-      console.log("   💾 Saved to page_performance table");
-
-      if (Array.isArray(data.events) && data.events.length > 0) {
-        await insertEventBatch(
-          data.events.map((e: Record<string, unknown>) => ({
-            url: TARGET_URL,
-            eventType: e.eventType as string,
-            selector: e.selector as string,
-            count: e.count as number,
-            context: e.context as string,
-            severity: e.severity as string,
-            suggestedFix: e.suggestedFix as string,
-          }))
-        );
-        console.log(`   💾 Saved ${data.events.length} UX events to clarity_events table`);
-      }
-
-      if (Array.isArray(data.trafficSources) && data.trafficSources.length > 0) {
-        await insertSourceBatch(
-          data.trafficSources.map((s: Record<string, unknown>) => ({
-            url: TARGET_URL,
-            source: s.source as string,
-            sessions: s.sessions as number,
-            scrollDepth: s.scrollDepth as number,
-            engagementTime: s.engagementTime as number,
-          }))
-        );
-        console.log(`   💾 Saved ${data.trafficSources.length} traffic sources to clarity_sources table`);
-      }
-    } catch (err) {
-      console.error("   ⚠️  Could not parse JSON from synthesis:", err);
-    }
-  }
-
-  const reportContent = synthesisResult.replace(/```json\s*[\s\S]*?\s*```/, "").trim();
-  const reportPath = resolve(REPORTS_DIR, "page-performance-audit.md");
-  writeFileSync(reportPath, `# ProGRO Density+ Page Performance Audit\n\n_Audited: ${new Date().toISOString()}_\n_URL: ${TARGET_URL}_\n\n${reportContent}\n`);
-  console.log(`   📄 Report saved to ${reportPath}`);
-}
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 
@@ -191,44 +49,121 @@ async function main() {
   console.log("║  ProGRO Density+ Page Performance Audit — Orchestrator     ║");
   console.log("╚══════════════════════════════════════════════════════════════╝");
   console.log(`\nTarget: ${TARGET_URL}`);
-  console.log(`Model:  ${MODEL}`);
   console.log(`Time:   ${new Date().toISOString()}\n`);
 
   const hasPageSpeed = !!process.env.PAGESPEED_API_KEY;
   const hasClarity = !!process.env.CLARITY_API_TOKEN && !!process.env.CLARITY_PROJECT_ID;
-  const hasAnthropic = !!process.env.ANTHROPIC_API_KEY;
 
   console.log("API keys:");
-  console.log(`  Anthropic:  ${hasAnthropic ? "✅" : "❌ Required — set ANTHROPIC_API_KEY"}`);
   console.log(`  PageSpeed:  ${hasPageSpeed ? "✅" : "📂 Using fallback data"}`);
   console.log(`  Clarity:    ${hasClarity ? "✅" : "📂 Using fallback data"}`);
 
-  if (!hasAnthropic) {
-    console.error("\n❌ ANTHROPIC_API_KEY is required to run the orchestrator.");
-    process.exit(1);
+  let finalResult = "";
+
+  for await (const message of query({
+    prompt: `You are orchestrating a comprehensive page audit of: ${TARGET_URL}
+
+Dispatch the three specialist agents to analyze the page:
+1. Use the perf-auditor agent to audit technical performance (Core Web Vitals, Lighthouse scores)
+2. Use the seo-analyst agent to audit SEO and messaging alignment against Sessions 1-3 data
+3. Use the cro-analyst agent to audit conversion/UX using Clarity behavioral data
+
+After all three agents report back, synthesize their findings into a unified audit report with these sections:
+1. Executive Summary (3-4 bullets)
+2. Technical Performance — Core Web Vitals pass/fail, key issues
+3. SEO & Messaging Alignment — keyword coverage, messaging gaps, alignment score
+4. Conversion & UX — scroll depth, rage/dead clicks, traffic source quality
+5. Top 10 Quick Wins — prioritized by estimated impact, each with what/why/effort
+6. Methodology
+
+Then call the save_audit_results tool with the structured data to save everything to the database.
+
+Finally, output the full markdown report.`,
+    options: {
+      // Register all MCP servers at the parent level
+      mcpServers: {
+        pagespeed: pagespeedServer,
+        seo: seoServer,
+        clarity: clarityServer,
+        db: dbSaveServer,
+      },
+
+      // The orchestrator can dispatch subagents and save results
+      allowedTools: ["Agent", "mcp__db__save_audit_results"],
+      tools: [],
+
+      // Define the three specialist subagents
+      agents: {
+        "perf-auditor": {
+          description: perfAgentConfig.description,
+          prompt: perfAgentConfig.prompt,
+          mcpServers: ["pagespeed"],
+          tools: [],
+          model: "sonnet",
+          maxTurns: 10,
+          permissionMode: "bypassPermissions",
+        },
+        "seo-analyst": {
+          description: seoAgentConfig.description,
+          prompt: seoAgentConfig.prompt,
+          mcpServers: ["seo"],
+          tools: [],
+          model: "sonnet",
+          maxTurns: 15,
+          permissionMode: "bypassPermissions",
+        },
+        "cro-analyst": {
+          description: croAgentConfig.description,
+          prompt: croAgentConfig.prompt,
+          mcpServers: ["clarity"],
+          tools: [],
+          model: "sonnet",
+          maxTurns: 10,
+          permissionMode: "bypassPermissions",
+        },
+      },
+
+      systemPrompt: `You are the lead product page auditor for ProGRO Density+ hair serum by Soapbox. You coordinate three specialist agents and synthesize their findings into a unified report. After synthesizing, you MUST call the save_audit_results tool to persist all structured data to the database.`,
+
+      permissionMode: "bypassPermissions",
+      model: "claude-sonnet-4-6",
+      maxTurns: 30,
+    },
+  })) {
+    // Stream assistant output
+    if (message.type === "assistant") {
+      for (const block of message.message.content) {
+        if ("text" in block) process.stdout.write(block.text);
+        if ("name" in block && block.name === "Agent") {
+          console.log(`\n🔄 Dispatching subagent...`);
+        }
+      }
+    }
+
+    // Capture final result
+    if (message.type === "result") {
+      if (message.subtype === "success") {
+        finalResult = message.result;
+        console.log(`\n\n✅ Audit complete. Cost: $${message.total_cost_usd.toFixed(4)}`);
+      } else {
+        console.log(`\n❌ Audit failed: ${message.subtype}`);
+      }
+    }
   }
 
-  // Dispatch all three sub-agents in parallel
-  console.log("\n━━━ Phase 1: Dispatching Sub-Agents ━━━");
-
-  const [perfResult, seoResult, croResult] = await Promise.all([
-    runSubAgent(client, buildPerfAgent()),
-    runSubAgent(client, buildSeoMessagingAgent()),
-    runSubAgent(client, buildCroUxAgent()),
-  ]);
-
-  // Synthesize
-  console.log("\n━━━ Phase 2: Synthesis ━━━");
-  const synthesisResult = await synthesize(perfResult, seoResult, croResult);
-
-  // Save
-  console.log("\n━━━ Phase 3: Save Results ━━━");
-  await saveResults(synthesisResult);
+  // Save the markdown report to disk
+  if (finalResult) {
+    const reportPath = resolve(REPORTS_DIR, "page-performance-audit.md");
+    writeFileSync(
+      reportPath,
+      `# ProGRO Density+ Page Performance Audit\n\n_Audited: ${new Date().toISOString()}_\n_URL: ${TARGET_URL}_\n\n${finalResult}\n`
+    );
+    console.log(`📄 Report saved to ${reportPath}`);
+  }
 
   console.log("\n╔══════════════════════════════════════════════════════════════╗");
   console.log("║  Audit Complete                                            ║");
   console.log("╚══════════════════════════════════════════════════════════════╝");
-  console.log(`\nReport: reports/page-performance-audit.md`);
   console.log("Run 'npm run dev' and visit http://localhost:3001/api/pages to see the data.\n");
 }
 
