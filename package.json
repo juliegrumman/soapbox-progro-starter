@@ -6,6 +6,7 @@
   "scripts": {
     "seed": "tsx src/db/seed.ts",
     "seed:keywords": "tsx src/db/seed-keywords.ts",
+    "seed:reddit": "tsx src/db/seed-reddit.ts",
     "seed:pages": "tsx src/db/seed-pages.ts",
     "db:push": "drizzle-kit push",
     "dev": "tsx src/server/index.ts",
