@@ -111,15 +111,38 @@ export const claritySources = sqliteTable("clarity_sources", {
 // Session 5: Meta Ads Performance
 export const metaAds = sqliteTable("meta_ads", {
   id: integer("id").primaryKey({ autoIncrement: true }),
+  // Identifiers
   campaignId: text("campaign_id"),
   campaignName: text("campaign_name"),
+  adSetId: text("ad_set_id"),
   adSetName: text("ad_set_name"),
+  adId: text("ad_id"),
+  adName: text("ad_name"),
+  // Campaign metadata
+  campaignObjective: text("campaign_objective"),
+  campaignStatus: text("campaign_status"), // effective_status from Meta
+  // Core metrics
   spend: real("spend"),
   impressions: integer("impressions"),
   clicks: integer("clicks"),
-  conversions: integer("conversions"),
-  roas: real("roas"),
+  reach: integer("reach"),
+  frequency: real("frequency"),
+  uniqueClicks: integer("unique_clicks"),
   ctr: real("ctr"),
   cpc: real("cpc"),
+  cpm: real("cpm"),
+  // Conversion metrics
+  conversions: integer("conversions"),
+  conversionValue: real("conversion_value"),
+  purchaseConversions: integer("purchase_conversions"),
+  costPerResult: real("cost_per_result"),
+  roas: real("roas"),
+  // Creative content
+  headline: text("headline"),
+  bodyText: text("body_text"),
+  callToAction: text("call_to_action"),
+  imageUrl: text("image_url"),
+  linkUrl: text("link_url"),
+  // Timestamp
   pulledAt: text("pulled_at"),
 });

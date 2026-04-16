@@ -63,19 +63,38 @@ export function getUnderperformers(minSpend = 10) {
     .orderBy(desc(metaAds.spend));
 }
 
-/** Insert a single ad record */
-export function insertAd(ad: {
+export type AdRecord = {
   campaignId?: string;
   campaignName?: string;
+  adSetId?: string;
   adSetName?: string;
+  adId?: string;
+  adName?: string;
+  campaignObjective?: string;
+  campaignStatus?: string;
   spend?: number;
   impressions?: number;
   clicks?: number;
-  conversions?: number;
-  roas?: number;
+  reach?: number;
+  frequency?: number;
+  uniqueClicks?: number;
   ctr?: number;
   cpc?: number;
-}) {
+  cpm?: number;
+  conversions?: number;
+  conversionValue?: number;
+  purchaseConversions?: number;
+  costPerResult?: number;
+  roas?: number;
+  headline?: string;
+  bodyText?: string;
+  callToAction?: string;
+  imageUrl?: string;
+  linkUrl?: string;
+};
+
+/** Insert a single ad record */
+export function insertAd(ad: AdRecord) {
   return db.insert(metaAds).values({
     ...ad,
     pulledAt: new Date().toISOString(),
@@ -83,20 +102,7 @@ export function insertAd(ad: {
 }
 
 /** Bulk insert ad records */
-export function insertAdBatch(
-  ads: Array<{
-    campaignId?: string;
-    campaignName?: string;
-    adSetName?: string;
-    spend?: number;
-    impressions?: number;
-    clicks?: number;
-    conversions?: number;
-    roas?: number;
-    ctr?: number;
-    cpc?: number;
-  }>
-) {
+export function insertAdBatch(ads: AdRecord[]) {
   const rows = ads.map((a) => ({
     ...a,
     pulledAt: new Date().toISOString(),

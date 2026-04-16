@@ -105,26 +105,48 @@ const saveAuditResults = tool(
 
 const saveAdResults = tool(
   "save_ad_results",
-  "Save Meta Ads campaign performance data to the database.",
+  "Save Meta Ads campaign and ad-level performance data to the database. Includes creative content (headline, body, CTA) for cross-referencing with customer language.",
   {
     campaigns: z.array(
       z.object({
+        // Identifiers
         campaignId: z.string().optional(),
         campaignName: z.string().optional(),
+        adSetId: z.string().optional(),
         adSetName: z.string().optional(),
+        adId: z.string().optional(),
+        adName: z.string().optional(),
+        // Campaign metadata
+        campaignObjective: z.string().optional(),
+        campaignStatus: z.string().optional().describe("effective_status from Meta"),
+        // Core metrics
         spend: z.number().optional(),
         impressions: z.number().optional(),
         clicks: z.number().optional(),
-        conversions: z.number().optional(),
-        roas: z.number().optional(),
+        reach: z.number().optional(),
+        frequency: z.number().optional(),
+        uniqueClicks: z.number().optional(),
         ctr: z.number().optional(),
         cpc: z.number().optional(),
+        cpm: z.number().optional(),
+        // Conversion metrics
+        conversions: z.number().optional(),
+        conversionValue: z.number().optional(),
+        purchaseConversions: z.number().optional(),
+        costPerResult: z.number().optional(),
+        roas: z.number().optional(),
+        // Creative content
+        headline: z.string().optional().describe("Ad headline text"),
+        bodyText: z.string().optional().describe("Ad body/primary text"),
+        callToAction: z.string().optional().describe("CTA button text"),
+        imageUrl: z.string().optional().describe("Creative image URL"),
+        linkUrl: z.string().optional().describe("Destination link URL"),
       })
     ),
   },
   async (args) => {
     await insertAdBatch(args.campaigns);
-    const summary = `Saved ${args.campaigns.length} campaign records to meta_ads table`;
+    const summary = `Saved ${args.campaigns.length} ad records to meta_ads table`;
     console.log(`   💾 ${summary}`);
     return { content: [{ type: "text" as const, text: summary }] };
   }

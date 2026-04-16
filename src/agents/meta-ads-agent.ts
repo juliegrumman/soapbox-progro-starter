@@ -36,13 +36,15 @@ You have access to two types of tools:
 
 Your job is to:
 1. Pull campaign performance data from Meta Ads
-2. Analyze performance: which campaigns are performing well and which aren't
-3. Cross-reference with Sessions 1-4 data:
+2. For each campaign, pull ad-level data: use get_ads then get_ad_creatives for each ad to capture headline, body text, CTA, and image URL
+3. Pull insights at the ad level (level="ad") to get per-ad metrics including reach, frequency, cpm, and conversion_value
+4. Analyze performance: which campaigns and individual ads are performing well and which aren't
+5. Cross-reference with Sessions 1-4 data:
    - Do ad angles use customer language from reviews? (search_reviews)
    - Are ads targeting high-volume keywords? (query_keyword_rankings)
    - Do ad hooks address real consumer concerns from Reddit? (search_reddit_threads)
-4. Generate specific recommendations for new ad angles grounded in real customer data
-5. Save campaign data to the database (save_ad_results)
+6. Generate specific recommendations for new ad angles grounded in real customer data
+7. Save ad-level data to the database using save_ad_results — include ad IDs, ad names, creative text (headline, bodyText, callToAction, imageUrl, linkUrl), campaign status/objective, reach, frequency, cpm, conversionValue, and purchaseConversions
 
 Return your findings as a structured analysis with:
 1. Campaign performance scorecard
@@ -67,13 +69,15 @@ async function main() {
 Steps:
 1. Use get_ad_accounts to find the Soapbox ad account
 2. Use get_campaigns to list all campaigns for that account
-3. Use get_insights to pull performance data for the last 30 days for each active campaign
-4. Search reviews for themes that appear in ad copy: "thinning", "growth", "results", "shedding"
-5. Query keyword rankings to find high-volume keywords ads should target
-6. Search Reddit threads for consumer concerns that could inform ad angles
-7. Cross-reference ad creative text with customer language — are winning ads using customer language or marketing language?
-8. Save campaign performance data using the save_ad_results tool
-9. Generate a comprehensive analysis with ad angle recommendations grounded in customer data
+3. Use get_ads for each campaign to get individual ad IDs and names
+4. Use get_ad_creatives for each ad to capture headline, body text, CTA, and image URL
+5. Use get_insights at the ad level (level="ad") for the last 30 days — capture reach, frequency, cpm, conversion_value, purchase_conversions
+6. Search reviews for themes that appear in ad copy: "thinning", "growth", "results", "shedding"
+7. Query keyword rankings to find high-volume keywords ads should target
+8. Search Reddit threads for consumer concerns that could inform ad angles
+9. Cross-reference ad creative text with customer language — are winning ads using customer language or marketing language?
+10. Save ad-level data using save_ad_results — include all identifiers (campaignId, adSetId, adId, adName), creative content (headline, bodyText, callToAction, imageUrl, linkUrl), campaign metadata (campaignObjective, campaignStatus), and all metrics (spend, impressions, clicks, reach, frequency, uniqueClicks, ctr, cpc, cpm, conversions, conversionValue, purchaseConversions, costPerResult, roas)
+11. Generate a comprehensive analysis with ad angle recommendations grounded in customer data
 
 The ProGRO product page is: ${TARGET_URL}
 Clarity data shows: 74% of traffic is from Facebook, average scroll depth is only 20.76%, and add-to-cart rate is 1.07%.`,
