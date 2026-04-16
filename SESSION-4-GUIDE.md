@@ -54,13 +54,14 @@ You should see both `@anthropic-ai/claude-agent-sdk` and `zod` in the dependenci
 
 You need three API keys for the full experience. The orchestrator falls back to cached data for any missing key, so you can proceed with just the Anthropic key.
 
+All keys live in `.env` at the project root. The repo ships with a tracked `.env.example` template — every variable you'll see below is already listed there with a blank value. If you already created `.env` in Session 2, just add the new keys to it.
+
 **3a. Anthropic API key (required)**
 
 This powers the sub-agents. Without it, the orchestrator can't run.
 
 ```
-Create a .env file (if it doesn't exist) and add this Anthropic API key:
-ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxx
+If I don't already have a .env file, copy .env.example to .env. Then set ANTHROPIC_API_KEY to sk-ant-xxxxxxxxxxxxx in the .env file.
 ```
 
 (Your instructor will give you the actual key.)
@@ -68,8 +69,7 @@ ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxx
 **3b. Google PageSpeed Insights API key (optional)**
 
 ```
-Add this PageSpeed Insights API key to the .env file:
-PAGESPEED_API_KEY=AIzaxxxxxxxxxxxxx
+Set PAGESPEED_API_KEY in the .env file to AIzaxxxxxxxxxxxxx.
 ```
 
 If you skip this, the orchestrator uses cached PageSpeed data from `data/pages/seed-pagespeed-results.json`.
@@ -77,7 +77,7 @@ If you skip this, the orchestrator uses cached PageSpeed data from `data/pages/s
 **3c. Microsoft Clarity credentials (optional)**
 
 ```
-Add these Microsoft Clarity credentials to the .env file:
+Set these in the .env file:
 CLARITY_API_TOKEN=xxxxxxxxxxxxx
 CLARITY_PROJECT_ID=xxxxxxxxxxxxx
 ```

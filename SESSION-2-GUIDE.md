@@ -39,15 +39,17 @@ cd soapbox-progro && npm install && claude
 
 ## Step 2: Set Up Your API Key
 
+The repo ships with a `.env.example` file listing every key you'll need across all 5 sessions (blank values). Copy it to `.env` and fill in your SerpAPI key.
+
 Type this into Claude Code:
 
 ```
-Create a .env file with my SerpAPI key: YOUR_KEY_HERE
+Copy .env.example to .env, then set SERPAPI_KEY to YOUR_KEY_HERE. Leave the other variables blank for now — we'll fill them in during later sessions.
 ```
 
 Replace `YOUR_KEY_HERE` with the API key you copied from SerpAPI.
 
-Claude will create a `.env` file with your API key. This is how you give Claude Code access to external services — through environment variables in a `.env` file.
+Claude will create your `.env` file from the template. This is how you give Claude Code access to external services — through environment variables in a `.env` file. (`.env` itself is gitignored, so your real keys never get committed; `.env.example` is the tracked template.)
 
 **Don't have a key?** That's OK — we have backup data. Tell Claude:
 

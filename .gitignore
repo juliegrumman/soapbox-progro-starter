@@ -2,7 +2,6 @@ node_modules/
 dist/
 venv/
 .env
-.env.example
 .DS_Store
 .mcp.json
 soapbox.db-shm
