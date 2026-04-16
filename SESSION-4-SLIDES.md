@@ -278,6 +278,34 @@ npm run audit:page     # Orchestrator → all three + synthesis + save
 
 ---
 
+## Slide: What Running the Orchestrator Produces
+*`npm run audit:page` → two artifacts, one pass*
+
+After the three sub-agents report back, the orchestrator synthesizes their findings and produces **two things at once**:
+
+### 1. A markdown report → `reports/page-performance-audit.md`
+A six-section audit written to disk:
+
+| Section | What's in it |
+|---|---|
+| **Executive Summary** | 3-4 bullets — the headline story |
+| **Technical Performance** | Core Web Vitals pass/fail, Lighthouse scores, key issues |
+| **SEO & Messaging Alignment** | Keyword coverage, messaging gaps, alignment score (the payoff for Sessions 1-3) |
+| **Conversion & UX** | Scroll depth, rage/dead clicks, traffic source quality |
+| **Top 10 Quick Wins** | Prioritized by impact, each with what / why / effort |
+| **Methodology** | Which agent saw which data, what was fallback vs. live |
+
+### 2. A structured DB row → `page_performance` + `clarity_events` + `clarity_sources`
+The orchestrator calls the Zod-typed `save_audit_results` tool. All 25+ columns land in the DB — scores, CWV timings, scroll depth, rage clicks, keyword gaps, quick wins (as JSON). No regex parsing of the markdown.
+
+### Why both?
+- The **markdown** is for humans — open it, read it, share it with the team
+- The **DB row** is for machines — Session 5's dashboard queries it directly, and future audits can diff against it
+
+> One orchestrator run. One audit. Two consumable shapes. That's the payoff of making `save_audit_results` a Zod tool instead of an afterthought.
+
+---
+
 ## Slide: External MCP Servers
 *The Meta Ads agent connects to Pipeboard*
 
