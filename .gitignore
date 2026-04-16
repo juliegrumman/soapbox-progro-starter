@@ -2,6 +2,7 @@ node_modules/
 dist/
 venv/
 .env
+.env.example
 .DS_Store
 soapbox.db-shm
 soapbox.db-wal
