@@ -463,13 +463,21 @@ You should see tools like `get_ad_accounts`, `get_campaigns`, `get_insights`, `g
 
 **14b. Run the Meta Ads agent:**
 
-The Meta Ads agent uses the same Agent SDK pattern as the page audit agents, but connects to the Pipeboard MCP (via `settingSources: ["project"]`) and cross-references with Sessions 1-3 data.
+The Meta Ads agent uses the same Agent SDK pattern as the page audit agents, but connects to the Pipeboard MCP (via `settingSources: ["project"]`) and cross-references with Sessions 1-4 data (reviews, keywords, Reddit threads, and the latest page audit).
 
 ```bash
 npm run agent:ads
 ```
 
-**What just happened:** You ran a fourth standalone agent that connects to an external MCP server (Pipeboard), pulls live Meta Ads data, cross-references with your accumulated Sessions 1-3 intelligence, and saves results to the database. Same SDK pattern, different data source.
+After the agent completes, your report lands at `reports/meta-ads-analysis.md` — same pattern as the page audit report. Open it to see the 8-section breakdown: executive summary, ad-level scorecard, top performers, underperformers, customer-vs-ad language audit, new angle recommendations, budget reallocation moves, and methodology.
+
+**What just happened:** You ran a fourth standalone agent that connects to an external MCP server (Pipeboard), pulls live Meta Ads data at the ad level (including actual creative text), cross-references it with your accumulated Sessions 1-4 intelligence, saves per-ad records to the database, **and writes a marketer-actionable markdown report to `reports/`**. Same SDK pattern as the page audit orchestrator — the Meta Ads agent now produces the same two consumable shapes: structured DB rows for machines, markdown for humans.
+
+**14c. Read the report:**
+
+```
+Read the Meta Ads report at reports/meta-ads-analysis.md. What are the top 3 new ad angles? For each, tell me which customer insight it's grounded in.
+```
 
 ## Step 15: The Architecture — Why This Works
 

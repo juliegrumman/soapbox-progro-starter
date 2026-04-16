@@ -15,12 +15,16 @@
 
 import "dotenv/config";
 import { query } from "@anthropic-ai/claude-agent-sdk";
+import { writeFileSync } from "fs";
+import { resolve } from "path";
 import { seoServer } from "./tools/seo-tools.js";
 import { dbSaveServer } from "./tools/db-save-tools.js";
 
 const TARGET_URL =
   process.env.AUDIT_URL ||
   "https://www.soapboxsoaps.com/pages/progro-density-plus-hair-serum";
+
+const REPORTS_DIR = resolve(import.meta.dirname, "../../reports");
 
 // ─── Exported config (for potential future orchestrator import) ──────────────
 
@@ -57,13 +61,69 @@ You have three types of tools:
 - Do ad angles use customer language from reviews? (search_reviews)
 - Are ads targeting high-volume keywords? (query_keyword_rankings)
 - Do ad hooks address real consumer concerns from Reddit? (search_reddit_threads)
+- What does the landing page itself deliver? Are ads promising what the page actually shows? (query_page_performance)
 
-## Output — an ad-level scorecard
-1. Ad-level performance scorecard — every ad with spend, ROAS, and a creative snippet
-2. Top-performing ads with the exact creative that worked and why
-3. Underperformers with analysis of why the creative missed
-4. Ad angle recommendations — each grounded in specific customer data (review quote, Reddit thread, or keyword volume)
-5. Budget optimization suggestions`,
+## Efficiency note
+Batch your save_ad_results call — pass ALL ads in a single call via the campaigns array, not one call per ad. You have 80 turns total; don't waste them on one-at-a-time saves.
+
+## Output — a marketer-actionable markdown report
+Your FINAL message must be a complete markdown report. It will be saved verbatim to reports/meta-ads-analysis.md. The report must have these 8 sections in this exact order, using H2 headings:
+
+### 1. Executive Summary
+Five bullets. Each bullet MUST cite a specific number (dollar, percent, ROAS), an ad name/ID, or a quoted customer phrase. No generic claims.
+- Total 30-day spend, overall ROAS, # of active ads
+- The single biggest opportunity (and which ad proves it)
+- The single biggest risk (and which ad proves it)
+- The biggest untapped angle, grounded in a customer quote or Reddit thread
+- The biggest customer-language vs ad-language gap, with a specific word example
+
+### 2. Ad-Level Performance Scorecard
+A markdown table of ALL ads, sorted by spend DESC. Columns: Ad Name | Campaign | Status | Spend | Impressions | CTR | CPC | ROAS | Purchases | Creative snippet (headline, truncated to ~40 chars).
+
+### 3. Top Performers — Why They Work
+Top 5 ads by ROAS (minimum $50 spend to qualify). For each:
+- Full creative (headline + body + CTA)
+- Core metrics (spend, ROAS, CTR, purchases)
+- **Why it works** — one paragraph grounded in a specific customer data point. Cite a review quote, a Reddit thread, or a keyword search volume. No generic "the messaging resonated" claims.
+
+### 4. Underperformers — Why They're Missing
+Bottom 5 ads with ≥$50 spend. For each:
+- Full creative (headline + body + CTA)
+- Core metrics
+- **Diagnosis** — what customer insight does this ad ignore? Cite the specific data point (review theme, Reddit concern, keyword) the creative fails to use.
+
+### 5. Customer Language vs Ad Language Audit
+Two tables:
+
+**Table A — Problem language:**
+| Customer phrase (source) | Mentions in reviews/Reddit | Appears in ads? | Ads using it |
+
+**Table B — Success language** (e.g., "baby hairs", "stopped shedding"):
+| Customer phrase (source) | Mentions in reviews/Reddit | Appears in ads? | Ads using it |
+
+End with: **"Language Gap Score: X of Y top customer phrases appear in at least one active ad."**
+
+### 6. Ad Angle Recommendations
+5–7 new ads to test. For each:
+- Proposed headline, body text, CTA (copy-ready)
+- Customer evidence (quote, data point, keyword volume) that grounds it
+- Audience/adset to test it in
+- Which existing ad from Section 4 it should replace or be tested against
+- Priority: P0 / P1 / P2
+
+### 7. Budget Reallocation Moves
+A decision table: Ad Name | 30-day spend | Decision (pause / scale 2x / maintain / reduce) | Reasoning | Expected impact.
+Every ad with >$100 spend must have a decision.
+
+### 8. Methodology
+- Date range pulled
+- # of ads analyzed
+- # of reviews, keywords, Reddit threads queried (name the specific keywords searched)
+- Latest page audit data referenced (if available)
+- Any missing/null fields or fallbacks used
+- Timestamp
+
+Use tables heavily. Always cite specific evidence. No vague claims. The marketer reading this should be able to implement every recommendation tomorrow without asking a follow-up question.`,
 };
 
 // ─── Standalone execution ────────────────────────────────────────────────────
@@ -74,6 +134,8 @@ async function main() {
   console.log("╚══════════════════════════════════════════════════════════════╝");
   console.log(`\nTarget page: ${TARGET_URL}`);
   console.log(`Time:        ${new Date().toISOString()}\n`);
+
+  let finalResult = "";
 
   for await (const message of query({
     prompt: `Analyze the Meta Ads campaigns for Soapbox's ProGRO Density+ hair serum at the **ad level** — one record per individual ad, including the actual creative text shown to viewers.
@@ -94,7 +156,9 @@ Then produce an ad-level scorecard with:
 - New ad angle recommendations grounded in specific customer data
 
 The ProGRO product page: ${TARGET_URL}
-Clarity context: 74% of traffic is from Facebook, average scroll depth is only 20.76%, and add-to-cart rate is 1.07%.`,
+Clarity context: 74% of traffic is from Facebook, average scroll depth is only 20.76%, and add-to-cart rate is 1.07%.
+
+When you have finished all analysis, output the complete 8-section markdown report as a single final message. Do not split it across multiple messages. The report will be saved verbatim to reports/meta-ads-analysis.md.`,
     options: {
       mcpServers: {
         seo: seoServer,
@@ -111,7 +175,7 @@ Clarity context: 74% of traffic is from Facebook, average scroll depth is only 2
       permissionMode: "bypassPermissions",
       systemPrompt: metaAdsAgentConfig.prompt,
       model: "claude-sonnet-4-6",
-      maxTurns: 60,
+      maxTurns: 80,
     },
   })) {
     if (message.type === "assistant") {
@@ -122,11 +186,22 @@ Clarity context: 74% of traffic is from Facebook, average scroll depth is only 2
     }
     if (message.type === "result") {
       if (message.subtype === "success") {
+        finalResult = message.result;
         console.log(`\n\n✅ Analysis complete. Cost: $${message.total_cost_usd.toFixed(4)}`);
       } else {
         console.log(`\n❌ Failed: ${message.subtype}`);
       }
     }
+  }
+
+  // Save the markdown report to disk
+  if (finalResult) {
+    const reportPath = resolve(REPORTS_DIR, "meta-ads-analysis.md");
+    writeFileSync(
+      reportPath,
+      `# ProGRO Density+ Meta Ads Analysis\n\n_Analyzed: ${new Date().toISOString()}_\n_URL: ${TARGET_URL}_\n_Data source: Pipeboard Meta Ads MCP + Sessions 1–4 cross-reference_\n\n${finalResult}\n`
+    );
+    console.log(`\n📄 Report saved to ${reportPath}`);
   }
 }
 

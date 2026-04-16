@@ -10,6 +10,7 @@ import { resolve } from "path";
 import { getKeywords } from "../../tools/keywords.js";
 import { searchReviews } from "../../tools/reviews.js";
 import { searchThreads } from "../../tools/reddit.js";
+import { getLatestAudit } from "../../tools/pages.js";
 
 const DATA_DIR = resolve(import.meta.dirname, "../../../data/pages");
 
@@ -127,8 +128,21 @@ const searchRedditThreads = tool(
   { annotations: { readOnlyHint: true } }
 );
 
+const queryPagePerformance = tool(
+  "query_page_performance",
+  "Query the latest page audit from Session 4. Returns scores, Core Web Vitals, messaging alignment, scroll depth, rage clicks, missing keywords, messaging gaps, and quick wins for a given URL. Use this to cross-reference whether ads promise what the landing page actually delivers.",
+  {
+    url: z.string().describe("The page URL to look up"),
+  },
+  async (args) => {
+    const results = await getLatestAudit(args.url);
+    return { content: [{ type: "text" as const, text: JSON.stringify(results, null, 2) }] };
+  },
+  { annotations: { readOnlyHint: true } }
+);
+
 export const seoServer = createSdkMcpServer({
   name: "seo",
   version: "1.0.0",
-  tools: [fetchPageContent, queryKeywordRankings, searchReviewsTool, searchRedditThreads],
+  tools: [fetchPageContent, queryKeywordRankings, searchReviewsTool, searchRedditThreads, queryPagePerformance],
 });
