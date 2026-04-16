@@ -87,6 +87,35 @@ for await (const message of query({
 
 ---
 
+## Slide: Trade-offs — When to Pick Which
+*"Less code" is not always the right answer*
+
+### Reach for the **API** when…
+- **You're not building an agent.** One-shot jobs — classify this review, extract JSON from this text, summarize this page — don't need a loop. The SDK is overkill.
+- **You need to inspect or mutate the conversation mid-loop.** Logging every tool call to a custom store, injecting a message between turns, pausing for human approval before tool N+1 runs. The SDK hides the message history; the API gives you every turn.
+- **Your tools don't fit the SDK's shape.** The SDK expects Zod schemas and a specific handler signature. If your tools are generated from OpenAPI specs, wired to a remote RPC, or dispatched in a sandbox, the API's raw tool-use format is simpler.
+- **Bundle size / deps matter.** Edge functions, cold-start-sensitive Lambdas, or browser contexts where `@anthropic-ai/sdk` is already more than you want.
+
+### Reach for the **Agent SDK** when…
+- **You're orchestrating sub-agents.** The `agents` option + dispatch is the single biggest lift to build by hand. If you need multi-agent coordination, the SDK is 10x less code.
+- **You're integrating MCP servers.** Connecting external MCP servers (like Pipeboard) is one line of config. With the API, you'd wrap the MCP client yourself.
+- **The standard loop is fine.** Tools run, agent iterates, you get a final result. If you don't need to mess with the middle, don't build the middle.
+- **You want permission modes, settingSources, maxTurns, etc. for free.** These are production concerns the SDK already solved.
+
+### The honest summary
+| Question | API | SDK |
+|---|---|---|
+| How much control? | All of it | Defaults + escape hatches |
+| How much code? | A lot | Very little |
+| Multi-agent? | Build it yourself | Built-in (`agents`) |
+| MCP servers? | Wrap them yourself | One-line config |
+| One-shot call? | Perfect fit | Overkill |
+| Learning curve? | "It's just HTTP" | New mental model |
+
+> The API is a lathe. The SDK is a jig. A jig is faster when you're making the same kind of part. A lathe is what you need when the part is unusual.
+
+---
+
 ## Slide: What is Zod?
 *Why we don't pass raw JSON to our tools*
 
