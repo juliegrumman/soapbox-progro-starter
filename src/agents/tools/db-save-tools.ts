@@ -118,7 +118,7 @@ const saveAdResults = tool(
         adName: z.string().optional(),
         // Campaign metadata
         campaignObjective: z.string().optional(),
-        campaignStatus: z.string().optional().describe("effective_status from Meta"),
+        campaignStatus: z.string().optional().describe("effective_status from Meta (ACTIVE, PAUSED, etc.)"),
         // Core metrics
         spend: z.number().optional(),
         impressions: z.number().optional(),
@@ -136,11 +136,11 @@ const saveAdResults = tool(
         costPerResult: z.number().optional(),
         roas: z.number().optional(),
         // Creative content
-        headline: z.string().optional().describe("Ad headline text"),
-        bodyText: z.string().optional().describe("Ad body/primary text"),
-        callToAction: z.string().optional().describe("CTA button text"),
-        imageUrl: z.string().optional().describe("Creative image URL"),
-        linkUrl: z.string().optional().describe("Destination link URL"),
+        headline: z.string().optional().describe("The ad headline text shown to viewers"),
+        bodyText: z.string().optional().describe("The main body / primary text of the ad"),
+        callToAction: z.string().optional().describe("CTA button label (e.g., SHOP_NOW, LEARN_MORE)"),
+        imageUrl: z.string().optional().describe("URL of the ad's image or video thumbnail"),
+        linkUrl: z.string().optional().describe("Destination URL the ad links to"),
       })
     ),
   },
