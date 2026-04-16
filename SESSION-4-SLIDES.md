@@ -166,6 +166,38 @@ A TypeScript orchestrator that dispatches **three specialist sub-agents** to aud
 
 ---
 
+## Slide: Deep Dive — The SEO + Messaging Agent
+*The agent that only works because Sessions 1-3 exist*
+
+This is the most cross-session-dependent sub-agent. Technical SEO is the easy part — the real job is asking: **"does our page speak the language of actual customers?"**
+
+### Its four tools
+| Tool | What it reads | Source |
+|---|---|---|
+| `fetch_page_content` | Title, meta desc, H1-H6, body text, image alts, JSON-LD | Live fetch of ProGRO page (falls back to cached HTML) |
+| `query_keyword_rankings` | Top keywords by volume, intent, cluster | `keyword_rankings` table (Session 2) |
+| `search_reviews` | Customer language for themes like "thinning", "results" | `competitive_reviews` table (Session 1) |
+| `search_reddit_threads` | Real consumer concerns and questions | `reddit_threads` table (Session 3) |
+
+### What it returns
+A structured JSON object with five fields:
+- **`onPageElements`** — title, meta desc, H1, key headings actually found on the page
+- **`keywordAnalysis`** — keywords present vs. high-value keywords missing
+- **`messagingGaps`** — customer themes/language from reviews + Reddit that the page never addresses
+- **`alignmentScore`** — 0-100, with a breakdown across keyword coverage, customer language usage, and objection handling
+- **`topRecommendations`** — 5 highest-leverage SEO/messaging improvements
+
+### The loop it runs (standalone mode)
+1. Fetch the ProGRO page HTML → extract on-page elements
+2. Pull top keywords by search volume from the DB
+3. Search reviews for themes: "thinning", "results", "growth"
+4. Search Reddit for: "hair density", "hair growth serum"
+5. Cross-reference presence/absence → compute alignment score
+
+> This agent is the strongest argument for the whole 5-session arc. You *can't* build it in Session 1. You need reviews + keywords + Reddit already in the DB before "messaging alignment" is even a question you can ask.
+
+---
+
 ## Slide: The Tool Pattern
 *One file. One Zod schema. One MCP server.*
 
