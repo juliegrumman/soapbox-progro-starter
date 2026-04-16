@@ -98,6 +98,7 @@ for await (const message of query({
 
 ### Reach for the **Agent SDK** when…
 - **You're orchestrating sub-agents.** The `agents` option + dispatch is the single biggest lift to build by hand. If you need multi-agent coordination, the SDK is 10x less code.
+- **You need context isolation between agents.** Each sub-agent runs in its own context window — the parent only sees the final summary, not all intermediate tool calls. Doable with the API, but you build it yourself.
 - **You're integrating MCP servers.** Connecting external MCP servers (like Pipeboard) is one line of config. With the API, you'd wrap the MCP client yourself.
 - **The standard loop is fine.** Tools run, agent iterates, you get a final result. If you don't need to mess with the middle, don't build the middle.
 - **You want permission modes, settingSources, maxTurns, etc. for free.** These are production concerns the SDK already solved.
@@ -192,6 +193,49 @@ A TypeScript orchestrator that dispatches **three specialist sub-agents** to aud
 ```
 
 > The orchestrator doesn't call `Promise.all()`. It declares the sub-agents in the `agents` option, and the SDK manages dispatch, execution, and result collection.
+
+---
+
+## Slide: Each Sub-Agent Gets Its Own Context Window
+*The non-obvious architectural payoff*
+
+When the orchestrator dispatches `seo-analyst`, the SDK spins up a **separate session with its own context window**. The sub-agent runs its full loop — fetching the page, querying keywords, searching reviews, searching Reddit, reasoning — all inside its own isolated context. When it's done, **only its final summary comes back to the orchestrator** as a tool result.
+
+### What the orchestrator sees vs. what the sub-agent sees
+
+```
+Orchestrator context                    SEO-analyst context (isolated)
+┌─────────────────────────┐            ┌──────────────────────────────┐
+│ System: "You coordinate │            │ System: "You are an SEO      │
+│ three specialists..."   │            │  strategist..."              │
+│                         │            │                              │
+│ User: "Audit the page"  │            │ [fetch_page_content call]    │
+│                         │   ──►      │ [result: 5000 chars of HTML] │
+│ [Agent(seo-analyst)]    │            │ [query_keyword_rankings]     │
+│                         │            │ [result: 40 keywords]        │
+│ [Agent result: "Align-  │   ◄──      │ [search_reviews]             │
+│  ment score 62/100.     │            │ [result: 20 reviews]         │
+│  Missing themes: X,Y"]  │            │ [search_reddit_threads]      │
+│                         │            │ [reasoning, synthesis]       │
+│ [Agent(perf-auditor)]   │            │ → final summary              │
+│ ...                     │            └──────────────────────────────┘
+└─────────────────────────┘
+```
+
+### Why this matters
+
+| Problem without isolation | What context isolation gives you |
+|---|---|
+| Parent context fills with every sub-agent tool call, every HTML blob, every reasoning step | Parent only sees compact summaries — stays focused on synthesis |
+| One long-running sub-agent can blow through the total token budget | Each sub-agent has its own budget; parent budget is preserved |
+| Sub-agents can accidentally see each other's intermediate state | Each sub-agent only sees its own prompt and tools |
+| Sequential — each agent's output pollutes the next | Parallel dispatch is safe because contexts are independent |
+
+### This is not free with the raw API
+You *can* architect context isolation yourself by instantiating separate `messages.create()` sessions per sub-agent and passing only the summary back — but you're building another layer of orchestration. The SDK's `agents` option makes it the default.
+
+> One orchestrator, N isolated sub-agent brains, one shared database.
+> This is why the multi-agent pattern scales — each agent works in peace.
 
 ---
 
