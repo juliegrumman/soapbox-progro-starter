@@ -21,7 +21,7 @@ By the end, you'll have built:
 - An Anthropic API key (this powers the sub-agents — your instructor will provide one for the session)
 - A Google PageSpeed Insights API key (free — get one at https://developers.google.com/speed/docs/insights/v5/get-started)
 - Microsoft Clarity API credentials (provided by the client)
-- A Meta Business Manager account with ad campaign access (for the Meta Ads MCP connection)
+- A Pipeboard Meta Ads MCP token URL (your instructor will provide one for the session)
 
 ## Step 1: Open Your Project
 
@@ -54,14 +54,13 @@ You should see both `@anthropic-ai/claude-agent-sdk` and `zod` in the dependenci
 
 You need three API keys for the full experience. The orchestrator falls back to cached data for any missing key, so you can proceed with just the Anthropic key.
 
-All keys live in `.env` at the project root. The repo ships with a tracked `.env.example` template — every variable you'll see below is already listed there with a blank value. If you already created `.env` in Session 2, just add the new keys to it.
-
 **3a. Anthropic API key (required)**
 
 This powers the sub-agents. Without it, the orchestrator can't run.
 
 ```
-If I don't already have a .env file, copy .env.example to .env. Then set ANTHROPIC_API_KEY to sk-ant-xxxxxxxxxxxxx in the .env file.
+Create a .env file (if it doesn't exist) and add this Anthropic API key:
+ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxx
 ```
 
 (Your instructor will give you the actual key.)
@@ -69,7 +68,8 @@ If I don't already have a .env file, copy .env.example to .env. Then set ANTHROP
 **3b. Google PageSpeed Insights API key (optional)**
 
 ```
-Set PAGESPEED_API_KEY in the .env file to AIzaxxxxxxxxxxxxx.
+Add this PageSpeed Insights API key to the .env file:
+PAGESPEED_API_KEY=AIzaxxxxxxxxxxxxx
 ```
 
 If you skip this, the orchestrator uses cached PageSpeed data from `data/pages/seed-pagespeed-results.json`.
@@ -77,7 +77,7 @@ If you skip this, the orchestrator uses cached PageSpeed data from `data/pages/s
 **3c. Microsoft Clarity credentials (optional)**
 
 ```
-Set these in the .env file:
+Add these Microsoft Clarity credentials to the .env file:
 CLARITY_API_TOKEN=xxxxxxxxxxxxx
 CLARITY_PROJECT_ID=xxxxxxxxxxxxx
 ```
@@ -443,41 +443,17 @@ Start the server with npm run dev and test these endpoints. Show me the response
 
 ## Step 14: Connect the Meta Ads MCP
 
-Now we're going to connect to Soapbox's live Meta Ads account. This uses the Pipeboard Meta Ads MCP — a remote MCP server that connects Claude to the Meta Ads API via a token-based URL (no OAuth dance required).
+Now we're going to connect to Soapbox's live Meta Ads account. This uses the Pipeboard Meta Ads MCP — a remote HTTP MCP server that connects Claude to the Meta Ads API via a pre-provisioned token.
 
-**14a. Get your Pipeboard token.**
-
-If you don't already have one, sign up at [pipeboard.co](https://pipeboard.co), connect your Meta Business Manager account, and copy your project token (it looks like `pk_xxxxxxxxxxxxx`).
-
-**14b. Add the MCP server at project scope.**
-
-We use **project scope** (not user scope) for two reasons:
-- The Meta Ads agent uses `settingSources: ["project"]` so it only sees the meta-ads server — not every other MCP server you happen to have installed
-- The configuration travels with the repo, so anyone who clones it gets the same setup
-
-**Exit Claude Code first** (press `Ctrl+C` or type `/exit`), then run:
+Your instructor will give you a token URL. Run this command (the URL must be quoted — zsh treats `?` as a glob character):
 
 ```
-claude mcp add meta-ads --scope project --transport http https://meta-ads.mcp.pipeboard.co/?token=pk_xxxxxxxxxxxxx
+claude mcp add meta-ads --scope project --transport http "https://meta-ads.mcp.pipeboard.co/?token=pk_xxxxxxxxxxxxx"
 ```
 
-This creates `.mcp.json` in the project root.
+`--scope project` writes the server to `.mcp.json` in the project so it's committed with the repo. After adding, restart Claude Code (or run `/mcp`) so the new server is loaded.
 
-**14c. Gitignore the MCP config.**
-
-`.mcp.json` contains your Pipeboard token. Add it to `.gitignore` so the token never gets pushed:
-
-```
-Add .mcp.json to .gitignore so my Pipeboard token doesn't get committed.
-```
-
-Re-enter Claude Code:
-
-```
-claude
-```
-
-**14d. Verify the connection:**
+**14a. Verify the connection:**
 
 ```
 What MCP tools do you have access to now? List any Meta Ads tools and what each one does.
@@ -485,100 +461,17 @@ What MCP tools do you have access to now? List any Meta Ads tools and what each 
 
 You should see tools like `get_ad_accounts`, `get_campaigns`, `get_insights`, `get_ads`, `get_ad_creatives`, and more.
 
-## Step 15: Expand the meta_ads Schema for Ad-Level Data
+**14b. Run the Meta Ads agent:**
 
-The default `meta_ads` table only stores campaign-level metrics. The Pipeboard MCP gives us much more — ad-level identifiers, reach/frequency, CPM, creative text (headlines, body copy, CTAs). The whole point of Session 5's analysis is to cross-reference *ad copy* against *customer language*, so we need to actually persist that creative content.
-
-```
-Update the meta_ads table in src/db/schema.ts to capture ad-level data and creative content. Keep the existing columns (campaignId, campaignName, adSetName, spend, impressions, clicks, conversions, roas, ctr, cpc, pulledAt) and add these new ones:
-
-Identifiers:
-- adSetId (text)
-- adId (text)
-- adName (text)
-
-Campaign metadata:
-- campaignObjective (text)
-- campaignStatus (text) — effective_status from Meta (ACTIVE, PAUSED, etc.)
-
-Audience metrics:
-- reach (integer)
-- frequency (real)
-- uniqueClicks (integer)
-- cpm (real)
-
-Conversion metrics:
-- conversionValue (real)
-- purchaseConversions (integer)
-- costPerResult (real)
-
-Creative content (this is the whole point — what the customer actually sees):
-- headline (text)
-- bodyText (text)
-- callToAction (text)
-- imageUrl (text)
-- linkUrl (text)
-
-Then run npm run db:push to apply the changes.
-```
-
-Verify the schema:
-
-```
-Show me the meta_ads table definition. How many columns does it have now?
-```
-
-You should see ~28 columns (up from ~12).
-
-**What just happened:** You expanded the schema to hold the data that makes the Session 5 analysis worth doing. Without `headline` and `bodyText`, you can't ask "are our ads using the same words customers use in 5-star reviews?" — that question requires the ad copy to live next to the review copy in the same database.
-
-## Step 16: Update the save_ad_results Tool
-
-The `save_ad_results` tool in `src/agents/tools/db-save-tools.ts` has a Zod schema that mirrors the schema columns. When you add columns, you need to add them to the Zod schema too — otherwise the agent can't pass them through.
-
-```
-Update the save_ad_results tool in src/agents/tools/db-save-tools.ts. The Zod schema for each campaign object should include all the new columns we just added: adSetId, adId, adName, campaignObjective, campaignStatus, reach, frequency, uniqueClicks, cpm, conversionValue, purchaseConversions, costPerResult, headline, bodyText, callToAction, imageUrl, linkUrl. Mark each as optional. Add z.string().describe() lines for the creative fields so the agent knows what to pass.
-
-Also update the AdRecord type in src/tools/ads.ts to match, and make sure both insertAd and insertAdBatch use that shared type.
-```
-
-Verify:
-
-```
-Show me the saveAdResults tool definition and the AdRecord type. Confirm they have all 17 new fields.
-```
-
-**What just happened:** The Zod schema is what the agent reads to know what data it can pass to the save tool. By keeping the schema in sync with the table, you let the agent send rich, validated data in a single call — no JSON regex parsing, no fragile string concatenation.
-
-## Step 17: Run the Meta Ads Agent
-
-The Meta Ads agent follows the same Agent SDK pattern as the page audit agents, but connects to the Pipeboard MCP (via `settingSources: ["project"]`) and cross-references with Sessions 1-3 data.
+The Meta Ads agent uses the same Agent SDK pattern as the page audit agents, but connects to the Pipeboard MCP (via `settingSources: ["project"]`) and cross-references with Sessions 1-3 data.
 
 ```bash
 npm run agent:ads
 ```
 
-Watch the terminal — you should see the agent:
-1. Authenticate to the Pipeboard MCP automatically (token in URL, no OAuth prompt)
-2. Pull ad accounts, campaigns, ads, and ad creatives
-3. Pull insights at the ad level (level="ad") for the last 30 days
-4. Search reviews/keywords/Reddit in parallel for cross-reference data
-5. Call `save_ad_results` with full ad-level records (creative text + metrics)
-6. Generate a markdown analysis with ad angle recommendations
+**What just happened:** You ran a fourth standalone agent that connects to an external MCP server (Pipeboard), pulls live Meta Ads data, cross-references with your accumulated Sessions 1-3 intelligence, and saves results to the database. Same SDK pattern, different data source.
 
-**Verify the data landed:**
-
-```
-Run this query and show me the results:
-SELECT ad_id, ad_name, headline, body_text, call_to_action, reach, frequency, cpm, campaign_status
-FROM meta_ads ORDER BY id DESC LIMIT 8;
-```
-
-You should see one row per ad, with full creative text and audience-level metrics — not just campaign-level rollups.
-
-**What just happened:** You ran a fourth standalone agent that connects to an external MCP server (Pipeboard), pulls live Meta Ads data including individual ad creatives, cross-references with your accumulated Sessions 1-3 intelligence, and persists everything to the database. Same SDK pattern, richer data model. Now Session 5's dashboard can show ad copy alongside review quotes — the foundation for the "customer language vs. marketing language" analysis.
-
-## Step 18: The Architecture — Why This Works
+## Step 15: The Architecture — Why This Works
 
 Ask Claude:
 
@@ -631,10 +524,7 @@ Common issues: invalid API key, API not enabled in Google Cloud Console, or the 
 Check that both `CLARITY_API_TOKEN` and `CLARITY_PROJECT_ID` are set in `.env`. Falls back to cached data automatically.
 
 **Meta Ads MCP won't connect**
-Make sure you ran `claude mcp add meta-ads --scope project --transport http https://meta-ads.mcp.pipeboard.co/?token=YOUR_TOKEN` outside of Claude Code (exit first). Check `claude mcp list` to confirm it's connected. If the token is invalid, the server will say so on connect.
-
-**Token leaked to git**
-If you accidentally committed `.mcp.json` before adding it to `.gitignore`, rotate your Pipeboard token immediately and remove the file from git history.
+Make sure the token URL is quoted (`"https://..."`) — zsh treats `?` as a glob. Use `--transport http`, not `sse`. After adding the server, restart Claude Code or run `/mcp` to load it. Confirm `.mcp.json` contains the `meta-ads` entry.
 
 **"No such table: page_performance" or missing columns**
 Run `npm run db:push` to apply the schema changes from Step 6.
