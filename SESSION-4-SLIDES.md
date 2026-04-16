@@ -92,7 +92,7 @@ for await (const message of query({
 
 ### Reach for the **API** when…
 - **You're not building an agent.** One-shot jobs — classify this review, extract JSON from this text, summarize this page — don't need a loop. The SDK is overkill.
-- **You need to inspect or mutate the conversation mid-loop.** Logging every tool call to a custom store, injecting a message between turns, pausing for human approval before tool N+1 runs. The SDK hides the message history; the API gives you every turn.
+- **You need to mutate the message history mid-loop.** The SDK lets you *observe* every turn (via streaming events and `PreToolUse`/`PostToolUse` hooks) and pause for approval (via `canUseTool`), but it does not let you *rewrite* prior messages, inject a synthetic turn, or edit history before the next call. If that's your requirement, drop down to the raw API.
 - **Your tools don't fit the SDK's shape.** The SDK expects Zod schemas and a specific handler signature. If your tools are generated from OpenAPI specs, wired to a remote RPC, or dispatched in a sandbox, the API's raw tool-use format is simpler.
 - **Bundle size / deps matter.** Edge functions, cold-start-sensitive Lambdas, or browser contexts where `@anthropic-ai/sdk` is already more than you want.
 
